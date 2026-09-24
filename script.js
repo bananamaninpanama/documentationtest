@@ -1,213 +1,233 @@
-<!DOCTYPE html>
-<html>
-  <body>
-    <style>
-      body {
-          background-color: black;
-          margin: 0;
-          padding: 0;
+path = [];
+let dataobj = {};
+counter = 0;
+const checks = document.createRange().createContextualFragment(`
+<div style="display: flex; align-items: center;">
+&ensp;<input type="checkbox" id="dodeletepath"">
+<label for="dodeletepath" style="user-select: none; display: block; text-align: center; color: white; font-family: Arial; font-weight: 300; font-size: 12px;">Attempt to keep current<br>path on upload?</label>
+</div>`);
+const showjsonbutton = document.createRange().createContextualFragment(`<button class="showjsonbutton" id="showcurrentjson" onclick="document.getElementById('currentjsonobjecttext').textContent = JSON.stringify(dataobj, null, 2); (document.getElementById('currentobjjsonthing')).showModal();">Show Current <br> JSON</button>`);
+
+//i copied this from the dino game code thing i made
+function copyCode() {
+        const range = document.createRange();
+        const selection = window.getSelection();
+        const statusMessage = document.getElementById('statusMessage');
+        range.selectNode(document.getElementById('currentjsonobjecttext'));
+        selection.removeAllRanges();
+        selection.addRange(range);
+    
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                statusMessage.textContent = "Copied to clipboard!";
+                statusMessage.style.color = "green";
+            } else {
+                statusMessage.textContent = "Failed to copy automatically.";
+                statusMessage.style.color = "red";
+            }
+        } catch (err) {
+            statusMessage.textContent = "Failed to copy automatically.";
+            statusMessage.style.color = "red";
+        }
+        selection.removeAllRanges();
+        setTimeout(function() {
+            statusMessage.textContent = '';
+        }, 2500);
+  }
+
+const getjsonfile = document.getElementById("jsonFile");
+getjsonfile.addEventListener("change", function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const jsonreader = new FileReader();
+  jsonreader.onload = function (e) {
+    try {
+      const fileString = e.target.result;
+      dataobj = JSON.parse(fileString);
+      console.log("JSON successfully loaded into variable:", dataobj);
+      document.getElementById("samelinething").append(checks);
+      document.getElementById("oppositeends").append(showjsonbutton);
+      if (
+        !document.getElementById("dodeletepath").checked ||
+        !document.getElementById("dodeletepath")
+      ) {
+        path = [];
       }
-      html {
-          margin: 0;
-          padding: 0;
-      }
-      .selectablekey {
-          font-family: Arial;
-          font-weight: 600;
-          text-decoration: none;
-          overflow: auto;
-      }
-      .selectablekey:link {
-          color: #55eeee;
-          overflow: auto;
-      }
-      .selectedkey:link {
-          color: magenta;
-          font-weight: bold;
-          overflow: auto;
-      }
-      .listofkeys {
-          color: black;
-      }
-      .box {
-          overflow: auto;
-          white-space: nowrap;
-          border-color:#333333;
-          padding: 5px;
-          background-color: black;
-          color: white;
-          box-sizing: border-box;
-          height: auto;
-          border: 2px solid #333;
-          border-radius: 7px;
-      }
-      .fileselector {
-        background-color: #414c61;
-        border-color: #456141;
-      }
-      .fileselector:hover {
-        background-color: #333;
-      }
-      .editbutton {
-        background-color: #414c61;
-        white-space: nowrap;
-        color: white;
-        box-sizing: border-box;
-        border: 2px solid #615641;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 7px;
-      }
-      .editbutton:hover {
-        background-color: #3c4148;
-        /* it didnt look right when i had this enabled*/
-        /* border-color: #615749; */
+      setkeypathurl();
+    } catch (error) {
+      console.error("Error parsing JSON. Make sure the file is valid.", error);
+    }
+  };
+  jsonreader.readAsText(file);
+});
+
+function editdecripion() {
+  let temppath = path.flatMap((val, i) =>
+              i < path.length - 1 ? [val, "children"] : [val],
+            ).concat("description")
+
+  const deepTarget = temppath.slice(0, (temppath.length - 1)).reduce((currentDepth, key) => {
+    // If the next nested object doesn't exist, create it
+    if (!(key in currentDepth)) {
+      console.error('... this is probably your fault for editing dataobj or path while editing an the description');
+    }
+    return currentDepth[key];
+  }, dataobj);
+deepTarget[temppath[temppath.length - 1]] = document.getElementById('editdescriptionbox').value;
+document.getElementById('descriptionbox').textContent = document.getElementById('editdescriptionbox').value;
+}
+
+function editname() {
+  const newkeyname = document.getElementById('editnamebox').value
+  const currentkeyname = document.getElementById('namebox').textContent
+  if (newkeyname != currentkeyname) {
+  let temppath = path.flatMap((val, i) =>
+              i < path.length - 1 ? [val, "children"] : [val],
+            )
+
+  const deepTarget = temppath.slice(0, (temppath.length - 1)).reduce((currentDepth, key) => {
+    if (!(key in currentDepth)) {
+      console.error('... this is probably your fault for editing dataobj or path while editing an the description');
+    }
+    return currentDepth[key];
+  }, dataobj);
+  if (Object.hasOwn(deepTarget, newkeyname)) {
+    if (confirm("A key with this name already exists, and if you continue, that key will be replaced with this one\n\nDo you want to proceed?")) {
+      delete deepTarget[newkeyname]
+    } else {
+      return
+    }
+  }
+  let updatedData = {}
+  Object.entries(deepTarget).forEach(([key, value]) => {
+    if (key === currentkeyname) {
+      updatedData[newkeyname] = value;
+    } else {
+      updatedData[key] = value;
+    }
+  });
+  Object.entries(deepTarget).forEach(([key, value]) => {
+     delete deepTarget[key]
+  });
+
+  Object.entries(updatedData).forEach(([key, value]) => {
+    deepTarget[key] = value;
+  });
+
+  document.getElementById('namebox').textContent = newkeyname;
+  path[path.length - 1] = newkeyname;
+  listofkeys.innerHTML = render(path, dataobj);
+  }
+}
+
+
+function banana() {
+    keypath = path.flatMap((val, i) =>
+              i < path.length - 1 ? [val, "children"] : [val],
+            );
+            keyname = keypath.pop();
         
-      }
-      .editbutton:active {
-        background-color: #333;
-        border-color: #554e44;
-      }
-      .showjsonbutton {
-        /* i tested it with this: background-color: #5b4161; then with purple then with red*/
-        background-color: #666;
-        padding: 4px;
-        white-space: nowrap;
-        /* attempt1: color: #cabfaf; */
-        /* attempt2: color: #d6c2a5; */
-        /* attempt3: color: #fff2e0; */
-        color: white;
-        box-sizing: border-box;
-        border: 2px solid #666;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 7px;
-      }
-      .showjsonbutton:hover {
-        background-color: #463c48;
-        /* it didnt look right when i had this enabled*/
-        /* border-color: #615749; */
-      }
-      .showjsonbutton:active {
-        background-color: #333;
-        border-color: #444;
-      }
-      /* i searched up how to do this just to make it clear you cannot interact with the background. i basicallt just copied this from https://css-tricks.com/using-and-styling-the-dialog-element/*/
-      dialog::backdrop {
-        background: #00000050;
-        backdrop-filter: blur(5px);
-      }
-    </style>
-    <script src="script.js" defer></script>
-    <dialog class="box" id="currentobjjsonthing" style="width: auto; height: auto;"><div style="display: flex; flex-direction: column; height: 100%; width: 100%">
-        <!-- this is *hopefully* going to make the things separate, and it will work -->
-        <div id="jsonbar">
-          <div id="copyobjectbar">
-          <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
-            <label style="font-color: white; font-family: sans-serif;">Current Object:</label>
-            <label style="font-family: sans-serif;" id="statusMessage"></label>
-              <div style="display: flex; overflow-y: auto; align-items: center;">
-              <button id="copycurrentjson" onclick="copyCode();" class="editbutton" style="color: white; height: 25px; width: 25px; font-size: 15px;"><svg style="fill: white;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><!-- I stole this from a google response(as in, it said "copy code" with this symbol next to it, so inspected the webpage and copied the path used for that since aparently there isnt an ascii symbol for it) and i have no idea how to edit it since this is like, my second time dealing with svg paths --><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button>
-              &thinsp;<!-- nvm it was probably the fact that github didn't register it immidiatly -->
-              <button id="closecurrjsonEditor" onclick="document.getElementById('currentobjjsonthing').close();" class="editbutton" style=" color: red; height: 25px; width: 25px; font-size: 15px;">⨯</button>
-              </div>
-          </div>
-          </div>
-        </div>
-        <label id="currentjsonobjecttext" class="box"  style="width: 100%; flex-grow: 1; resize: none; white-space: pre;"></label>
-      </div>
-      </dialog>
+            keypath.reduce((currentLevel, key) => {
+              return currentLevel && currentLevel[key] !== undefined
+                ? (typeof currentLevel[key] === 'object' ? currentLevel[key] : key)
+                : undefined;
+            }, dataobj)
+            return [keyname]
+}
+function setkeypathurl() {
+  const listofkeys = document.getElementById("listofkeys");
+  counter = 0;
+  listofkeys.innerHTML = render(path, dataobj);
+  descholder.innerHTML =
+    `<div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;"><label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 30px;">Name:</label><button onclick="(document.getElementById('testnameeditor')).showModal();" class="editbutton" type="button" style="height: 25px; width: 25px; font-size: 15px;" id="editnamebutton">🖉</button> </div><div class="box" style="white-space: pre-line;"><label id="namebox" style="color: yellow; font-family: Arial; font-size: 40px">` +
+    (Array.isArray(path)
+      ? path.length === 0
+        ? "Select Key"
+      : banana()
+      : "path is not valid. this is probably a mistake on my part") +
+    `</label></div><div style="width: auto; height: 3px; background-color: #333; margin: 10px -4px; border-radius: 2px;"></div>
+    <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;"><label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 30px;">Description:</label> <button onclick="(document.getElementById('testeditor')).showModal();" class="editbutton" type="button" style="height: 25px; width: 25px; font-size: 15px;" id="editbutton">🖉</button> </div><div class="box" style="white-space: pre-line;"><label id="descriptionbox" style="color: yellow; font-family: Arial;">` +
+    (Array.isArray(path)
+      ? path.length === 0
+        ? "Select key"
+        : path.flatMap((val, i) =>
+              i < path.length - 1 ? [val, "children"] : [val],
+            )
+            .concat("description")
+            .reduce((currentLevel, key) => {
+              return currentLevel && currentLevel[key] !== undefined
+                ? currentLevel[key]
+                : undefined;
+            }, dataobj)
+      : "path is not valid. this is probably a mistake on my part") +
+    `</label></div><div style="width: auto; height: 3px; background-color: #333; margin: 10px -4px; border-radius: 2px;"></div>`;
+  if (path.length === 0) {
+    document.getElementById("editbutton").style.display = "none";
+    document.getElementById('editdescriptionbox').value = "WHAT ARE YOU DOING HERE?! I GOT RID OF THE EDIT DESCRIPTION BUTTON FOR A REASON! (or maybe you tried to like, get the description from an invalid array(i dont think i implemented that, but like, i ran it when it tried to get the element with id 'select key' instead of 'descriptionbox' and it gave me this message), either way:) YOU SHOULDN'T BE HERE!!!!!"
+  } else {
+    document.getElementById('editdescriptionbox').value = document.getElementById('descriptionbox').textContent
+  }
+  if (path.length === 0) {
+    document.getElementById("editnamebutton").style.display = "none";
+    document.getElementById('editname').value = "WHAT ARE YOU DOING HERE?! I GOT RID OF THE EDIT DESCRIPTION BUTTON FOR A REASON! (or maybe you tried to like, get the description from an invalid array(i dont think i implemented that, but like, i ran it when it tried to get the element with id 'select key' instead of 'descriptionbox' and it gave me this message), either way:) YOU SHOULDN'T BE HERE!!!!!"
+  } else {
+  document.getElementById('editnamebox').value = document.getElementById('namebox').textContent;
+  }
+  
+}
+function myFunction(element) {
+  element = document.getElementById(`key${element}`);
+  const parents = [];
+  while (element.parentElement.id != "listofkeys") {
+    parents.push(element.parentElement.dataset.keyname);
+    element = element.parentElement;
+  }
+  path = parents.toReversed();
+}
+function render(inputpath, obj, currpath = [], currentlist = [], under = true) {
+  if (under) {
+    var htmltoreturn = `<label style="color: lime; font-size: 12px">Root</label><br>`;
+  } else {
+    var htmltoreturn = "";
+  }
+  Object.entries(obj).forEach(([key, value], index) => {
+    counter++;
+    let currentvalue = value
+    let gap = [currentlist]
+      .join("")
+      .replace(/true/g, "&thinsp;&thinsp;&ensp;")
+      .replace(/false/g, "│&thinsp;");
+    var testcurrpath = [...currpath, key];
+    let outerindex = index
+    key.split(/\r?\n/).forEach((line, index) => {
+    if (index === 0) {
+    htmltoreturn =
+      htmltoreturn +
+      `<label style="color: lime;" data-keyname="${key}">${gap}${Object.keys(obj).length != 0 ? (outerindex === Object.keys(obj).length - 1 ? "└" : "├") : ""}
+        <span id="key${counter}">
+            <a href="javascript:void(0)" onclick="myFunction(${counter}); setkeypathurl();" class="selectablekey${testcurrpath.length === inputpath.length && testcurrpath.every((val, outerindex) => val === inputpath[outerindex]) ? " selectedkey" : ""}">
+                ${line}
+            </a>
+            <br>
+        </span>
+        ${(index === key.split(/\r?\n/).length - 1) ? render(inputpath, currentvalue["children"], testcurrpath, currentlist + [outerindex === Object.keys(obj).length - 1], false) : ""}
+    </label>`
+    } else {
+      htmltoreturn =
+      htmltoreturn +
+      `<label style="color: lime;" data-keyname="${key}">${gap}${Object.keys(obj).length != 0 ? (outerindex === Object.keys(obj).length - 1 ? "&thinsp;&thinsp;&thinsp;" : "│") : ""}
+            <a href="javascript:void(0)" onclick="myFunction(${counter}); setkeypathurl();" class="selectablekey${testcurrpath.length === inputpath.length && testcurrpath.every((val, outerindex) => val === inputpath[outerindex]) ? " selectedkey" : ""}">
+                ${line}
+            </a>
+            <br>
+        </span>
+        ${(index === key.split(/\r?\n/).length - 1) ? render(inputpath, currentvalue["children"], testcurrpath, currentlist + [outerindex === Object.keys(obj).length - 1], false) : ""}
+    </label>`
+    }
+  });
+  
+  });
 
-
-    <dialog class="box" id="testeditor" style="width: auto; height: auto;">
-      <div style="display: flex; flex-direction: column; height: 100%; width: 100%">
-        <!-- this is *hopefully* going to make the things separate, and it will work -->
-        <div id="editbar">
-          <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
-            <label style="font-color: white; font-family: sans-serif;">Edit Here:</label>
-              <div style="display: flex; overflow-y: auto; align-items: center;">
-                <button id="saveedits" onclick="editdecripion();" class="editbutton" style="color: white; height: 25px; width: 25px; font-size: 15px;">🖫</button>
-                &thinsp;
-                <button id="saveeditsandclose" onclick="editdecripion(); document.getElementById('testeditor').close();" class="editbutton" style="color: white; height: 25px; width: 40px; font-size: 15px;">🖫<span style="color: #ff8080">+</span><span style="color: red">⨯</span></button>
-                &thinsp;
-                <button id="closeDescEditor" onclick="document.getElementById('testeditor').close();" class="editbutton" style="color: red; height: 25px; width: 25px;font-size:  15px;">⨯</button>
-              </div>
-          </div>
-        </div>
-        <textarea id="editdescriptionbox" class="box" style="width: 100%; flex-grow: 1; resize: none;"></textarea>
-      </div>
-    </dialog>
-
-<dialog class="box" id="testnameeditor" style="width: auto; height: auto;">
-      <div style="display: flex; flex-direction: column; height: 100%; width: 100%">
-        <!-- this is *hopefully* going to make the things separate, and it will work -->
-        <div id="editnamebar">
-          <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
-            <label style="font-color: white; font-family: sans-serif;">Edit Here:</label>
-              <div style="display: flex; overflow-y: auto; align-items: center;">
-                <button id="saveedits" onclick="editname();" class="editbutton" style="color: white; height: 25px; width: 25px; font-size: 15px;">🖫</button>
-                &thinsp;
-                <button id="saveeditsandclose" onclick="editname(); document.getElementById('testnameeditor').close();" class="editbutton" style="color: white; height: 25px; width: 40px; font-size: 15px;">🖫<span style="color: #ff8080">+</span><span style="color: red">⨯</span></button>
-                &thinsp;
-                <button id="closeNameEditor" onclick="document.getElementById('testnameeditor').close();" class="editbutton" style="color: red; height: 25px; width: 25px;font-size:  15px;">⨯</button>
-              </div>
-          </div>
-        </div>
-        <textarea id="editnamebox" class="box" style="width: 100%; flex-grow: 1; resize: none;"></textarea>
-      </div>
-    </dialog>
-
-    <div
-      class="box"
-      style="border-radius: 0px; background-color: #190631; height: 100vh; width: 100vw; border: 1px solid #250129;"
-    >
-      <div style="display: flex; flex-direction: column; height: 100%;">
-        <div
-          id="filestuff"
-          class="box"
-          style="width: 100%; flex-shrink: 0; min-height: 0; overflow: auto;"
-        >
-        <div id="oppositeends" style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
-          <div id="samelinething" style="display: flex; overflow-y: auto;">
-            <input
-              id="jsonFile"
-              type="file"
-              accept=".json"
-              style="color: blue;"
-              hidden
-            />
-            <label
-              for="jsonFile"
-              class="box fileselector"
-              style="padding: 10px 20px; display: inline-block; font-family: sans-serif; font-weight: bold; overflow: visible;"
-            >
-              Upload
-            </label>
-          </div>
-          </div>
-        </div>
-        <!-- i tried to make separator line so that it could be round, and not have any weird breaks... but ill fix it later
-
-        <div style="width: 100%; height: 3px; background-color: #333; margin: 25px auto; border-radius: 2px;"></div>
-
-        -->
-        <div style="flex-grow: 1; flex-shrink: 1;  min-height: 0;">
-          <div style="display: flex; flex-direction: row;  height: 100%;">
-            <div
-              id="listofkeys"
-              class="box"
-              style="width: 30%; overflow-y: auto;"
-            ></div>
-            <div
-              class="box"
-              style="width: 70%; overflow-y: auto;"
-              id="descholder"
-            ></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </body>
-</html>
+  return htmltoreturn;
+}
