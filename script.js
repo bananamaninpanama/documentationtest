@@ -81,6 +81,7 @@ document.getElementById('descriptionbox').textContent = document.getElementById(
 function editname() {
   const newkeyname = document.getElementById('editnamebox').value
   const currentkeyname = document.getElementById('namebox').textContent
+  if (newkeyname != currentkeyname) {
   let temppath = path.flatMap((val, i) =>
               i < path.length - 1 ? [val, "children"] : [val],
             )
@@ -91,7 +92,12 @@ function editname() {
     }
     return currentDepth[key];
   }, dataobj);
-
+  if (Object.hasOwn(deepTarget, newkeyname)) {
+    if (confirm("A key with this name already exists, and if you continue, that key will be replaced with this one\n\nDo you want to proceed?")) {
+    } else {
+      return
+    }
+  }
   let updatedData = {}
   Object.entries(deepTarget).forEach(([key, value]) => {
     if (key === currentkeyname) {
@@ -100,17 +106,18 @@ function editname() {
       updatedData[key] = value;
     }
   });
-
   Object.entries(deepTarget).forEach(([key, value]) => {
      delete deepTarget[key]
   });
 
-  Object.entries(updatedData).forEach(([key, value], index) => {
+  Object.entries(updatedData).forEach(([key, value]) => {
     deepTarget[key] = value;
   });
+
   document.getElementById('namebox').textContent = newkeyname;
   path[path.length - 1] = newkeyname;
   listofkeys.innerHTML = render(path, dataobj);
+  }
 }
 
 
