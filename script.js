@@ -78,12 +78,69 @@ deepTarget[temppath[temppath.length - 1]] = document.getElementById('editdescrip
 document.getElementById('descriptionbox').textContent = document.getElementById('editdescriptionbox').value;
 }
 
+function editname() {
+  const newkeyname = document.getElementById('editnamebox').value
+  const currentkeyname = document.getElementById('namebox').textContent
+  let temppath = path.flatMap((val, i) =>
+              i < path.length - 1 ? [val, "children"] : [val],
+            )
+
+  const deepTarget = temppath.slice(0, (temppath.length - 2)).reduce((currentDepth, key) => {
+    if (!(key in currentDepth)) {
+      console.error('... this is probably your fault for editing dataobj or path while editing an the description');
+    }
+    return currentDepth[key];
+  }, dataobj);
+
+  let updatedData = {}
+  Object.entries(deepTarget).forEach(([key, value]) => {
+    if (key === currentkeyname) {
+      updatedData[newkeyname] = value;
+    } else {
+      updatedData[key] = value;
+    }
+  });
+
+  Object.entries(deepTarget).forEach(([key, value]) => {
+     delete deepTarget[key]
+  });
+
+  Object.entries(updatedData).forEach(([key, value], index) => {
+    deepTarget[key] = value;
+  });
+  document.getElementById('namebox').textContent = newkeyname;
+  path[path.length - 1] = newkeyname;
+  listofkeys.innerHTML = render(path, dataobj);
+}
+
+
+function banana() {
+    keypath = path.flatMap((val, i) =>
+              i < path.length - 1 ? [val, "children"] : [val],
+            );
+            keyname = keypath.pop();
+        
+            keypath.reduce((currentLevel, key) => {
+              return currentLevel && currentLevel[key] !== undefined
+                ? (typeof currentLevel[key] === 'object' ? currentLevel[key] : key)
+                : undefined;
+            }, dataobj)
+            return [keyname]
+}
 function setkeypathurl() {
   const listofkeys = document.getElementById("listofkeys");
   counter = 0;
   listofkeys.innerHTML = render(path, dataobj);
   descholder.innerHTML =
-    `<div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;"><label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 30px;">Description:</label> <button onclick="(document.getElementById('testeditor')).showModal();" class="editbutton" type="button" style="height: 25px; width: 25px; font-size: 15px;" id="editbutton">🖉</button> </div><div class="box" style="white-space: pre-line;"><label id="descriptionbox" style="color: yellow; font-family: Arial;">` +
+    `<div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;"><button onclick="(document.getElementById('testnameeditor')).showModal();" class="editbutton" type="button" style="height: 25px; width: 25px; font-size: 15px;" id="editnamebutton">🖉</button> </div><div class="box" style="white-space: pre-line;"><label id="namebox" style="color: yellow; font-family: Arial; font-size: 40px">` +
+    (Array.isArray(path)
+      ? path.length === 0
+        ? "Select Key"
+
+        : banana()
+      : "path is not valid. this is probably a mistake on my part") +
+    `</label></div><div style="width: auto; height: 3px; background-color: #333; margin: 10px -4px; border-radius: 2px;"></div>
+    <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;"><label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 30px;">Description:</label> <button onclick="(document.getElementById('testeditor')).showModal();" class="editbutton" type="button" style="height: 25px; width: 25px; font-size: 15px;" id="editbutton">🖉</button> </div><div class="box" style="white-space: pre-line;"><label id="descriptionbox" style="color: yellow; font-family: Arial;">` +
     (Array.isArray(path)
       ? path.length === 0
         ? "Select key"
@@ -103,6 +160,12 @@ function setkeypathurl() {
     document.getElementById('editdescriptionbox').value = "WHAT ARE YOU DOING HERE?! I GOT RID OF THE EDIT DESCRIPTION BUTTON FOR A REASON! (or maybe you tried to like, get the description from an invalid array(i dont think i implemented that, but like, i ran it when it tried to get the element with id 'select key' instead of 'descriptionbox' and it gave me this message), either way:) YOU SHOULDN'T BE HERE!!!!!"
   } else {
     document.getElementById('editdescriptionbox').value = document.getElementById('descriptionbox').textContent
+  }
+  if (path.length === 0) {
+    document.getElementById("editnamebutton").style.display = "none";
+    document.getElementById('editname').value = "WHAT ARE YOU DOING HERE?! I GOT RID OF THE EDIT DESCRIPTION BUTTON FOR A REASON! (or maybe you tried to like, get the description from an invalid array(i dont think i implemented that, but like, i ran it when it tried to get the element with id 'select key' instead of 'descriptionbox' and it gave me this message), either way:) YOU SHOULDN'T BE HERE!!!!!"
+  } else {
+  document.getElementById('editnamebox').value = document.getElementById('namebox').textContent;
   }
   
 }
