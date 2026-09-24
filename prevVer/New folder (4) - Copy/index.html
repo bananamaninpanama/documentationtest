@@ -1,0 +1,44 @@
+<style>
+  body {
+      background-color: black;
+  }
+  .selectablekey {
+      font-family: Arial;
+      font-weight: 600;
+      text-decoration: none;
+      overflow: auto;
+  }
+  .selectablekey:link {
+      color: #55eeee;
+      overflow: auto;
+  }
+  .selectedkey:link {
+      color: magenta;
+      font-weight: bold;
+      overflow: auto;
+  }
+  .listofkeys {
+      color: black;
+  }
+  .box {
+      overflow: auto;
+      white-space: nowrap;
+      border-color:#333333;
+      border: 2px solid #333;
+      background-color: black;
+      color: white;
+      border-radius: 7px;
+      box-sizing: border-box;
+      padding:2px;
+  }
+</style>
+<script src="script.js" defer></script>
+<div style="display: flex; flex-direction: column; height: 100vh;">
+  <div id="filestuff" class="box" style="width: 100%;">
+    <input type="file" id="jsonFile" accept=".json" style="color: blue;" />
+  </div>
+  <div style="display: flex; flex-direction: row; height: 100%">
+    <div id="listofkeys" class="box" style="width: 30%;"></div>
+    <div class="box" style="width: 70%;" id="descholder"></div>
+  </div>
+</div>

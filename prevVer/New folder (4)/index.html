@@ -1,0 +1,36 @@
+<style>
+    body {
+        background-color: black;
+    }
+    
+    .selectablekey {
+        font-family: Arial;
+        font-weight: 600;
+    }
+    .selectablekey:link {
+        color: yellow;
+    }
+    .selectedkey * {
+        color: black;
+    }
+    .selectedkey {
+        color: green;
+    }
+    .selectedkey:link {
+        color: #e74c3c;
+        font-weight: bold;
+    }
+    .listofkeys {
+        style="color: black;"
+    }
+</style>
+
+    <div id="filestuff">
+    <input type="file" id="jsonFile" accept=".json" style="color: blue;">
+    </div>
+
+<script src="script.js" defer></script>
+<div id="listofkeys">
+    <span id=keypath hidden>
+    </span>
+</div>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <style>
+      body {
+          background-color: black;
+          margin: 0;
+          padding: 0;
+      }
+      html {
+          margin: 0;
+          padding: 0;
+      }
+      .selectablekey {
+          font-family: Arial;
+          font-weight: 600;
+          text-decoration: none;
+          overflow: auto;
+      }
+      .selectablekey:link {
+          color: #55eeee;
+          overflow: auto;
+      }
+      .selectedkey:link {
+          color: magenta;
+          font-weight: bold;
+          overflow: auto;
+      }
+      .listofkeys {
+          color: black;
+      }
+      .box {
+          overflow: auto;
+          white-space: nowrap;
+          border-color:#333333;
+          padding: 5px;
+          background-color: black;
+          color: white;
+          box-sizing: border-box;
+          height: auto;
+          border: 2px solid #333;
+          border-radius: 7px;
+      }
+      .fileselector {
+        background-color: #414c61;
+        border-color: #456141;
+      }
+      .fileselector:hover {
+        background-color: #333;
+      }
+      .editbutton {
+        background-color: #414c61;
+        white-space: nowrap;
+        color: white;
+        box-sizing: border-box;
+        border: 2px solid #615641;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 7px;
+      }
+      .editbutton:hover {
+        background-color: #3c4148;
+        /* it didnt look right when i had this enabled*/
+        /* border-color: #615749; */
+        
+      }
+      .editbutton:active {
+        background-color: #333;
+        border-color: #554e44;
+      }
+      .showjsonbutton {
+        /* i tested it with this: background-color: #5b4161; then with purple then with red*/
+        background-color: #666;
+        padding: 4px;
+        white-space: nowrap;
+        /* attempt1: color: #cabfaf; */
+        /* attempt2: color: #d6c2a5; */
+        /* attempt3: color: #fff2e0; */
+        color: white;
+        box-sizing: border-box;
+        border: 2px solid #666;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 7px;
+      }
+      .showjsonbutton:hover {
+        background-color: #463c48;
+        /* it didnt look right when i had this enabled*/
+        /* border-color: #615749; */
+      }
+      .showjsonbutton:active {
+        background-color: #333;
+        border-color: #444;
+      }
+      /* i searched up how to do this just to make it clear you cannot interact with the background. i basicallt just copied this from https://css-tricks.com/using-and-styling-the-dialog-element/*/
+      dialog::backdrop {
+        background: #00000050;
+        backdrop-filter: blur(5px);
+      }
+    </style>
+    <script src="script.js" defer></script>
+    <dialog class="box" id="currentobjjsonthing" style="width: auto; height: auto;"><div style="display: flex; flex-direction: column; height: 100%; width: 100%">
+        <!-- this is *hopefully* going to make the things separate, and it will work -->
+        <div id="jsonbar">
+          <div id="copyobjectbar">
+          <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
+            <label style="font-color: white; font-family: sans-serif;">Current Object:</label>
+            <label style="font-family: sans-serif;" id="statusMessage"></label>
+              <div style="display: flex; overflow-y: auto; align-items: center;">
+              <button id="copycurrentjson" onclick="copyCode();" class="editbutton" style="color: white; height: 25px; width: 25px; font-size: 15px;"><svg style="fill: white;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><!-- I stole this from a google response(as in, it said "copy code" with this symbol next to it, so inspected the webpage and copied the path used for that since aparently there isnt an ascii symbol for it) and i have no idea how to edit it since this is like, my second time dealing with svg paths --><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button>
+              <button id="closecurrjsonEditor" onclick="document.getElementById('currentobjjsonthing').close();" class="editbutton" style=" color: red; height: 25px; width: 25px; font-size: 15px;">⨯</button>
+              </div>
+          </div>
+          </div>
+        </div>
+        <label id="currentjsonobjecttext" class="box"  style="width: 100%; flex-grow: 1; resize: none; white-space: pre-wrap;"></label>
+      </div>
+      </dialog>
+
+
+    <dialog class="box" id="testeditor" style="width: auto; height: auto;">
+      <div style="display: flex; flex-direction: column; height: 100%; width: 100%">
+        <!-- this is *hopefully* going to make the things separate, and it will work -->
+        <div id="editbar">
+          <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
+            <label style="font-color: white; font-family: sans-serif;">Edit Here:</label>
+              <div style="display: flex; overflow-y: auto; align-items: center;">
+                <button id="saveedits" onclick="editdecripion();" class="editbutton" style="color: white; height: 25px; width: 25px; font-size: 15px;">🖫</button>
+                &thinsp;
+                <button id="saveeditsandclose" onclick="editdecripion(); document.getElementById('testeditor').close();" class="editbutton" style="color: white; height: 25px; width: 40px; font-size: 15px;">🖫<span style="color: #ff8080">+</span><span style="color: red">⨯</span></button>
+                &thinsp;
+                <button id="closeDescEditor" onclick="document.getElementById('testeditor').close();" class="editbutton" style="color: red; height: 25px; width: 25px;font-size:  15px;">⨯</button>
+              </div>
+          </div>
+        </div>
+        <textarea id="editdescriptionbox" class="box" style="width: 100%; flex-grow: 1; resize: none;"></textarea>
+      </div>
+    </dialog>
+    <div
+      class="box"
+      style="border-radius: 0px; background-color: #190631; height: 100vh; width: 100vw; border: 1px solid #250129;"
+    >
+      <div style="display: flex; flex-direction: column; height: 100%;">
+        <div
+          id="filestuff"
+          class="box"
+          style="width: 100%; flex-shrink: 0; min-height: 0; overflow: auto;"
+        >
+        <div id="oppositeends" style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
+          <div id="samelinething" style="display: flex; overflow-y: auto;">
+            <input
+              id="jsonFile"
+              type="file"
+              accept=".json"
+              style="color: blue;"
+              hidden
+            />
+            <label
+              for="jsonFile"
+              class="box fileselector"
+              style="padding: 10px 20px; display: inline-block; font-family: sans-serif; font-weight: bold; overflow: visible;"
+            >
+              Upload
+            </label>
+          </div>
+          </div>
+        </div>
+        <!-- i tried to make separator line so that it could be round, and not have any weird breaks... but ill fix it later
+
+        <div style="width: 100%; height: 3px; background-color: #333; margin: 25px auto; border-radius: 2px;"></div>
+
+        -->
+        <div style="flex-grow: 1; flex-shrink: 1;  min-height: 0;">
+          <div style="display: flex; flex-direction: row;  height: 100%;">
+            <div
+              id="listofkeys"
+              class="box"
+              style="width: 30%; overflow-y: auto;"
+            ></div>
+            <div
+              class="box"
+              style="width: 70%; overflow-y: auto;"
+              id="descholder"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
