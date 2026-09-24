@@ -85,7 +85,7 @@ function editname() {
               i < path.length - 1 ? [val, "children"] : [val],
             )
 
-  const deepTarget = temppath.slice(0, (temppath.length - 2)).reduce((currentDepth, key) => {
+  const deepTarget = temppath.slice(0, (temppath.length - 1)).reduce((currentDepth, key) => {
     if (!(key in currentDepth)) {
       console.error('... this is probably your fault for editing dataobj or path while editing an the description');
     }
