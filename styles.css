@@ -104,7 +104,33 @@ html {
   background-color: #333;
   border-color: #444;
 }
+.childrenpath {
+  /* i tested it with this: background-color: #f5ac50*/
+  background-color: #222;
+  padding: 4px;
+  /* attempt1: color: #cabfaf; */
+  /* attempt2: color: #d6c2a5; */
+  /* attempt3: color: #fff2e0; */
+  color: #E0992B;
+  box-sizing: border-box;
+  border: 2px solid #E0992B; /* i tried this color: first #e1472b*/
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 7px;
+}
 
+.childrenpath:hover {
+  border-color: #ecaa3e;
+  /* it didnt look right when i had this enabled*/
+  /* border-color: #615749; */
+}
+
+.childrenpath:active {
+  border-color: #D98A0F;
+  color: #dd9220;
+  background-color: #1a1a1a;
+}
 /* i searched up how to do this just to make it clear you cannot interact with the background. i basicallt just copied this from https://css-tricks.com/using-and-styling-the-dialog-element/*/
 dialog::backdrop {
   background: #00000050;
