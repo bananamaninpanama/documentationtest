@@ -1,105 +1,10 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>KeyTreeTest</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
   <body>
-    <style>
-      body {
-          background-color: black;
-          margin: 0;
-          padding: 0;
-      }
-      html {
-          margin: 0;
-          padding: 0;
-      }
-      .selectablekey {
-          font-family: Arial;
-          font-weight: 600;
-          text-decoration: none;
-          overflow: auto;
-      }
-      .selectablekey:link {
-          color: #55eeee;
-          overflow: auto;
-      }
-      .selectedkey:link {
-          color: magenta;
-          font-weight: bold;
-          overflow: auto;
-      }
-      .listofkeys {
-          color: black;
-      }
-      .box {
-          overflow: auto;
-          white-space: nowrap;
-          border-color:#333333;
-          padding: 5px;
-          background-color: black;
-          color: white;
-          box-sizing: border-box;
-          height: auto;
-          border: 2px solid #333;
-          border-radius: 7px;
-      }
-      .fileselector {
-        background-color: #414c61;
-        border-color: #456141;
-      }
-      .fileselector:hover {
-        background-color: #333;
-      }
-      .editbutton {
-        background-color: #414c61;
-        white-space: nowrap;
-        color: white;
-        box-sizing: border-box;
-        border: 2px solid #615641;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 7px;
-      }
-      .editbutton:hover {
-        background-color: #3c4148;
-        /* it didnt look right when i had this enabled*/
-        /* border-color: #615749; */
-        
-      }
-      .editbutton:active {
-        background-color: #333;
-        border-color: #554e44;
-      }
-      .showjsonbutton {
-        /* i tested it with this: background-color: #5b4161; then with purple then with red*/
-        background-color: #666;
-        padding: 4px;
-        white-space: nowrap;
-        /* attempt1: color: #cabfaf; */
-        /* attempt2: color: #d6c2a5; */
-        /* attempt3: color: #fff2e0; */
-        color: white;
-        box-sizing: border-box;
-        border: 2px solid #666;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 7px;
-      }
-      .showjsonbutton:hover {
-        background-color: #463c48;
-        /* it didnt look right when i had this enabled*/
-        /* border-color: #615749; */
-      }
-      .showjsonbutton:active {
-        background-color: #333;
-        border-color: #444;
-      }
-      /* i searched up how to do this just to make it clear you cannot interact with the background. i basicallt just copied this from https://css-tricks.com/using-and-styling-the-dialog-element/*/
-      dialog::backdrop {
-        background: #00000050;
-        backdrop-filter: blur(5px);
-      }
-    </style>
     <script src="script.js" defer></script>
     <dialog class="box" id="currentobjjsonthing" style="width: auto; height: auto;"><div style="display: flex; flex-direction: column; height: 100%; width: 100%">
         <!-- this is *hopefully* going to make the things separate, and it will work -->
