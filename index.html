@@ -110,7 +110,7 @@
             <label style="font-family: sans-serif;" id="statusMessage"></label>
               <div style="display: flex; overflow-y: auto; align-items: center;">
               <button id="copycurrentjson" onclick="copyCode();" class="editbutton" style="color: white; height: 25px; width: 25px; font-size: 15px;"><svg style="fill: white;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><!-- I stole this from a google response(as in, it said "copy code" with this symbol next to it, so inspected the webpage and copied the path used for that since aparently there isnt an ascii symbol for it) and i have no idea how to edit it since this is like, my second time dealing with svg paths --><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button>
-              &thinsp;<!-- i have no clue why this isn't rendering the thin space -->
+              &thinsp;<!-- nvm it was probably the fact that github didn't register it immidiatly -->
               <button id="closecurrjsonEditor" onclick="document.getElementById('currentobjjsonthing').close();" class="editbutton" style=" color: red; height: 25px; width: 25px; font-size: 15px;">⨯</button>
               </div>
           </div>
@@ -139,6 +139,26 @@
         <textarea id="editdescriptionbox" class="box" style="width: 100%; flex-grow: 1; resize: none;"></textarea>
       </div>
     </dialog>
+
+<dialog class="box" id="testnameeditor" style="width: auto; height: auto;">
+      <div style="display: flex; flex-direction: column; height: 100%; width: 100%">
+        <!-- this is *hopefully* going to make the things separate, and it will work -->
+        <div id="editnamebar">
+          <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
+            <label style="font-color: white; font-family: sans-serif;">Edit Here:</label>
+              <div style="display: flex; overflow-y: auto; align-items: center;">
+                <button id="saveedits" onclick="editname();" class="editbutton" style="color: white; height: 25px; width: 25px; font-size: 15px;">🖫</button>
+                &thinsp;
+                <button id="saveeditsandclose" onclick="editname(); document.getElementById('testnameeditor').close();" class="editbutton" style="color: white; height: 25px; width: 40px; font-size: 15px;">🖫<span style="color: #ff8080">+</span><span style="color: red">⨯</span></button>
+                &thinsp;
+                <button id="closeNameEditor" onclick="document.getElementById('testnameeditor').close();" class="editbutton" style="color: red; height: 25px; width: 25px;font-size:  15px;">⨯</button>
+              </div>
+          </div>
+        </div>
+        <textarea id="editnamebox" class="box" style="width: 100%; flex-grow: 1; resize: none;"></textarea>
+      </div>
+    </dialog>
+
     <div
       class="box"
       style="border-radius: 0px; background-color: #190631; height: 100vh; width: 100vw; border: 1px solid #250129;"
