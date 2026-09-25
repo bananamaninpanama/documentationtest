@@ -1,6 +1,5 @@
 path = [];
 let dataobj = {};
-currentchildren = {};
 counter = 0;
 const checks = document.createRange()
   .createContextualFragment(`
@@ -201,12 +200,13 @@ function banana() {
       (typeof currentLevel[key] === 'object' ? currentLevel[key] : key) :
       undefined;
   }, dataobj)
+  console.log(keyname)
   return [keyname]
 }
 
 function getchildrenofcurrentkeyasbuttons() {
 
-  currentchildren = path.flatMap((val, i) =>
+  let currentchildren = path.flatMap((val, i) =>
       i < path.length - 1 ? [val, "children"] : [val],
     )
     .concat("children")
@@ -236,73 +236,127 @@ function getchildrenofcurrentkeyasbuttons() {
   return valuetoreturn
 }
 
+function getparentofcurrentkeyasbuttons() {
+
+  let currentparent = path.flatMap((val, i) =>
+    i < path.length - 1 ? [val, "children"] : [val],
+  )
+  let parentkey = currentparent.at(-3)
+  currentparent = currentparent.slice(0, -2)
+    .reduce((currentLevel, key) => {
+      return currentLevel && currentLevel[key] !== undefined ?
+        currentLevel[key] :
+        undefined;
+    }, dataobj)
+  let sliceidx1 = (currentparent["description"])
+    .indexOf("\n")
+  let sliceidx2 = (currentparent["description"])
+    .indexOf("\n", sliceidx1 = -1 ? currentparent["description"].length : sliceidx1 + 1)
+  let insertvalue = (currentparent["description"].slice(0, sliceidx2 = -1 ? currentparent["description"].length : sliceidx2))
+    .slice(0, 60)
+  valuetoreturn = `<div id="parent" style="display: flex; flex-direction: column;">
+  <button class="childrenpath" onclick="path.pop(); setkeypathurl();" style="flex: 1; display: flex; flex-direction: column;">
+    <label style="font-size: 20px;">${parentkey}</label>
+    <label style="font-size: 8px; display: inline-block; color: #fffd6ee9">${insertvalue}${(insertvalue.length === currentparent["description"].length ? '' : '...')}</label>
+  </button>`
+
+
+
+
+  valuetoreturn = valuetoreturn + "</div>"
+  return valuetoreturn
+}
+
 
 function setkeypathurl() {
   const listofkeys = document.getElementById("listofkeys");
   counter = 0;
   listofkeys.innerHTML = render(path, dataobj);
-  descholder.innerHTML =
-    `<div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;"><label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 30px;">Name:</label><button onclick="(document.getElementById('testnameeditor')).showModal();" class="editbutton" type="button" style="height: 25px; width: 25px; font-size: 15px;" id="editnamebutton">🖉</button> </div><div class="box" style="white-space: pre-line;"><label id="namebox" style="color: yellow; font-family: Arial; font-size: 40px">` +
-    (Array.isArray(path) ?
-      path.length === 0 ?
-      "Select Key" :
-      banana() :
-      "path is not valid. this is probably a mistake on my part") +
-    `</label></div><div style="width: auto; height: 3px; background-color: #333; margin: 10px -4px; border-radius: 2px;"></div>
-    <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;"><label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 30px;">Description:</label> <button onclick="(document.getElementById('testeditor')).showModal();" class="editbutton" type="button" style="height: 25px; width: 25px; font-size: 15px;" id="editbutton">🖉</button> </div><div class="box" style="white-space: pre-line;"><label id="descriptionbox" style="color: yellow; font-family: Arial;">` +
-    (Array.isArray(path) ?
-      path.length === 0 ?
-      "Select key" :
-      path.flatMap((val, i) =>
-        i < path.length - 1 ? [val, "children"] : [val],
-      )
-      .concat("description")
-      .reduce((currentLevel, key) => {
-        return currentLevel && currentLevel[key] !== undefined ?
-          currentLevel[key] :
-          undefined;
-      }, dataobj) :
-      "path is not valid. this is probably a mistake on my part") +
-    `</label></div><div style="width: auto; height: 3px; background-color: #333; margin: 10px -4px; border-radius: 2px;"></div>
+  if (Array.isArray(path)) {
+    if (path.length === 0) {
+      descholder.innerHTML = `<label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 22px;">Select a key</label>`
+      
+      let errmessage =  "WHAT ARE YOU DOING HERE?! I GOT RID OF THE EDIT 𝖣̶𝖤̶𝖲̶𝖢̶𝖱̶𝖨̶𝖯̶𝖳̶𝖨̶𝖮̶𝖭̶ BUTTON(s) FOR A REASON! (or maybe you tried to like, get the description from an invalid array(i dont think i implemented that, but like, i ran it when it tried to get the element with id 'select key' instead of 'descriptionbox' and it gave me this message), either way:) YOU SHOULDN'T BE HERE!!!!!"
+      
+      document.getElementById('editdescriptionbox')
+        .value = errmessage
+      document.getElementById('editnamebox')
+        .value = errmessage
+      document.getElementById('editchildrenbox')
+        .value = errmessage
+
+     /* This code is probably redundant now, but i wont delete it incase i need it later.
+     if (document.getElementById("editbutton")) {
+        document.getElementById("editbutton")
+          .style.display = "none";
+      }
+      if (document.getElementById("editnamebutton")) {
+        document.getElementById("editnamebutton")
+          .style.display = "none";
+      }
+      if (document.getElementById("editchildrenbutton")) {
+        document.getElementById("editchildrenbutton")
+          .style.display = "none";
+      }
+      */
+
+    } else {
+      descholder.innerHTML =
+        `<div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
+            <label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 30px;">Name:</label>
+            <button onclick="(document.getElementById('testnameeditor')).showModal();" class="editbutton" type="button" style="height: 25px; width: 25px; font-size: 15px;" id="editnamebutton">🖉</button>
+        </div>
+        <div class="box">
+            <label id="namebox" style="color: yellow; font-family: Arial; font-size: 40px; white-space: pre;">`
+                + banana() +
+            `</label>
+        </div>
+        <div style="width: auto; height: 3px; background-color: #333; margin: 10px -4px; border-radius: 2px;"></div>
+        <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
+            <label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 30px;">Description:</label>
+            <button onclick="(document.getElementById('testeditor')).showModal();" class="editbutton" type="button" style="height: 25px; width: 25px; font-size: 15px;" id="editbutton">🖉</button>
+        </div>
+        <div class="box">
+            <label id="descriptionbox" style="color: yellow; font-family: Arial; white-space: pre;">`
+                + path.flatMap((val, i) =>
+                  i < path.length - 1 ? [val, "children"] : [val],
+                )
+                .concat("description")
+                .reduce((currentLevel, key) => {
+                  return currentLevel && currentLevel[key] !== undefined ?
+                    currentLevel[key] :
+                    undefined;
+                }, dataobj) +
+            `</label>
+        </div>
+        <div style="width: auto; height: 3px; background-color: #333; margin: 10px -4px; border-radius: 2px;"></div>
+        <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
+            <label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 30px;">Parent:</label>`
+            + ((path.length < 2) ? "[Um. Well... lack of parents]" : getparentofcurrentkeyasbuttons()) +
+        `</div>
+        <div style="width: auto; height: 3px; background-color: #333; margin: 10px -4px; border-radius: 2px;"></div>
+        <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
+            <label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 30px;">Children:</label>
+            <button onclick="(document.getElementById('testchildreneditor')).showModal();" class="editbutton" type="button" style="height: 25px; width: 25px; font-size: 15px;" id="editchildrenbutton">🖉</button>
+        </div>
+        <div class="box" style="padding 8px; white-space: pre; display:flex; justify-content: center; align-items: center; flex-direction: column;" id="childrenbox">`
+            + getchildrenofcurrentkeyasbuttons() +
+        `</div>`;
     
-    <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;"><label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 30px;">Children:</label><button onclick="(document.getElementById('testchildreneditor')).showModal();" class="editbutton" type="button" style="height: 25px; width: 25px; font-size: 15px;" id="editchildrenbutton">🖉</button> </div><div class="box" style="padding 8px; white-space: pre-line; display:flex; justify-content: center; align-items: center; flex-direction: column;" id="childrenbox">` +
-    (Array.isArray(path) ?
-      path.length === 0 ?
-      "Select Key" :
-      getchildrenofcurrentkeyasbuttons() :
-      "path is not valid. this is probably a mistake on my part") +
-    `</div><div style="width: auto; height: 3px; background-color: #333; margin: 10px -4px; border-radius: 2px;"></div>`;
-  if (path.length === 0) {
-    document.getElementById("editbutton")
-      .style.display = "none";
-    document.getElementById('editdescriptionbox')
-      .value = "WHAT ARE YOU DOING HERE?! I GOT RID OF THE EDIT DESCRIPTION BUTTON FOR A REASON! (or maybe you tried to like, get the description from an invalid array(i dont think i implemented that, but like, i ran it when it tried to get the element with id 'select key' instead of 'descriptionbox' and it gave me this message), either way:) YOU SHOULDN'T BE HERE!!!!!"
-  } else {
-    document.getElementById('editdescriptionbox')
-      .value = document.getElementById('descriptionbox')
-      .textContent
-  }
-  if (path.length === 0) {
-    document.getElementById("editnamebutton")
-      .style.display = "none";
-    document.getElementById('editnamebox')
-      .value = "WHAT ARE YOU DOING HERE?! I GOT RID OF THE EDIT DESCRIPTION BUTTON FOR A REASON! (or maybe you tried to like, get the description from an invalid array(i dont think i implemented that, but like, i ran it when it tried to get the element with id 'select key' instead of 'descriptionbox' and it gave me this message), either way:) YOU SHOULDN'T BE HERE!!!!!"
-  } else {
-    document.getElementById('editnamebox')
-      .value = document.getElementById('namebox')
-      .textContent;
-  }
+      document.getElementById('editnamebox')
+        .value = document.getElementById('namebox')
+        .textContent;
 
-  if (path.length === 0) {
+      document.getElementById('editnamebox')
+        .value = document.getElementById('namebox')
+        .textContent;
 
-    currentchildren = {};
-
-    document.getElementById("editchildrenbutton")
-      .style.display = "none";
-    document.getElementById('editchildrenbox')
-      .value = "WHAT ARE YOU DOING HERE?! I GOT RID OF THE EDIT DESCRIPTION BUTTON FOR A REASON! (or maybe you tried to like, get the description from an invalid array(i dont think i implemented that, but like, i ran it when it tried to get the element with id 'select key' instead of 'descriptionbox' and it gave me this message), either way:) YOU SHOULDN'T BE HERE!!!!!"
+      document.getElementById('editdescriptionbox')
+        .value = document.getElementById('descriptionbox')
+        .textContent
+    }
   } else {
-    ;
+    descholder.innerHTML = `<label style="color: red; font-weight: bold">path is not valid. this is probably a mistake on my part.          UNLESS YOU CHANGED IT!</label>`
   }
 }
 
