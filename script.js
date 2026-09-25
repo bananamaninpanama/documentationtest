@@ -205,28 +205,33 @@ function banana() {
 }
 
 function getchildrenofcurrentkeyasbuttons() {
-  
-    currentchildren = path.flatMap((val, i) =>
-        i < path.length - 1 ? [val, "children"] : [val],
-      )
-      .concat("children")
-      .reduce((currentLevel, key) => {
-        return currentLevel && currentLevel[key] !== undefined ?
-          currentLevel[key] :
-          undefined;
-      }, dataobj)
-  
-  if (Object.keys(currentchildren).length === 0) {
+
+  currentchildren = path.flatMap((val, i) =>
+      i < path.length - 1 ? [val, "children"] : [val],
+    )
+    .concat("children")
+    .reduce((currentLevel, key) => {
+      return currentLevel && currentLevel[key] !== undefined ?
+        currentLevel[key] :
+        undefined;
+    }, dataobj)
+
+  if (Object.keys(currentchildren)
+    .length === 0) {
     return `<label>no subkeys yet</label>`
   }
   valuetoreturn = `<div id="parent" style="display: flex; flex-direction: column;">`
-  Object.entries(currentchildren).forEach(([key, value]) => {
-    let sliceidx1 = (value["description"]).indexOf("\n")
-    let sliceidx2 = (value["description"]).indexOf("\n", sliceidx1 = -1 ? value["description"].length : sliceidx1 + 1)
-    let insertvalue = (value["description"].slice(0, sliceidx2 = -1 ? value["description"].length : sliceidx2)).slice(0, 60)
-    valuetoreturn = valuetoreturn + `
+  Object.entries(currentchildren)
+    .forEach(([key, value]) => {
+      let sliceidx1 = (value["description"])
+        .indexOf("\n")
+      let sliceidx2 = (value["description"])
+        .indexOf("\n", sliceidx1 = -1 ? value["description"].length : sliceidx1 + 1)
+      let insertvalue = (value["description"].slice(0, sliceidx2 = -1 ? value["description"].length : sliceidx2))
+        .slice(0, 60)
+      valuetoreturn = valuetoreturn + `
     <button class="childrenpath" onclick="path.push('${key}'); setkeypathurl();" style="flex: 1; margin: 4px; display: flex; flex-direction: column;"><label style="font-size: 20px;">${key}</label><label style="font-size: 8px; display: inline-block; color: #fffd6ee9">${insertvalue}${(insertvalue.length === value["description"].length ? '' : '...')}</label></button>`
-  });
+    });
   valuetoreturn = valuetoreturn + "</div>"
   return valuetoreturn
 }
@@ -280,7 +285,7 @@ function setkeypathurl() {
   if (path.length === 0) {
     document.getElementById("editnamebutton")
       .style.display = "none";
-    document.getElementById('editname')
+    document.getElementById('editnamebox')
       .value = "WHAT ARE YOU DOING HERE?! I GOT RID OF THE EDIT DESCRIPTION BUTTON FOR A REASON! (or maybe you tried to like, get the description from an invalid array(i dont think i implemented that, but like, i ran it when it tried to get the element with id 'select key' instead of 'descriptionbox' and it gave me this message), either way:) YOU SHOULDN'T BE HERE!!!!!"
   } else {
     document.getElementById('editnamebox')
@@ -289,14 +294,15 @@ function setkeypathurl() {
   }
 
   if (path.length === 0) {
-  
+
     currentchildren = {};
 
     document.getElementById("editchildrenbutton")
       .style.display = "none";
     document.getElementById('editchildrenbox')
       .value = "WHAT ARE YOU DOING HERE?! I GOT RID OF THE EDIT DESCRIPTION BUTTON FOR A REASON! (or maybe you tried to like, get the description from an invalid array(i dont think i implemented that, but like, i ran it when it tried to get the element with id 'select key' instead of 'descriptionbox' and it gave me this message), either way:) YOU SHOULDN'T BE HERE!!!!!"
-  } else {;
+  } else {
+    ;
   }
 }
 
