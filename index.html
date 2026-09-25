@@ -156,19 +156,95 @@
                style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
             <div id="samelinething"
                  style="display: flex; overflow-y: auto;">
-              <input id="jsonFile"
-                     type="file"
-                     accept=".json"
-                     style="color: blue;"
-                     hidden />
-              <label for="jsonFile"
+              <button onclick="document.getElementById('importmenu').showModal();"
                      class="box fileselector"
                      style="padding: 10px 20px; display: inline-block; font-family: sans-serif; font-weight: bold; overflow: visible;">
-                Upload
-              </label>
+                Import
+              </button>
             </div>
           </div>
         </div>
+        
+        
+        
+        
+        
+        
+        
+        
+<dialog class="box"
+        id="importmenu"
+        style="width: auto; height: auto;">
+  <div style="display:
+       flex;
+       flex-direction:
+       column;
+       height:
+       100%;
+       width:
+       100%;">
+    
+    <div style="display: flex; flex-direction: column; height: 100%; width: 100%;">
+      <div style="display: flex; flex-direction: column; height: 100%; width: 100%">
+        <!-- this is *hopefully* going to make the things separate, and it will work -->
+        <div id="ImportMenuBar">
+          <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between">
+            <label style="font-color: white; font-family: sans-serif;">Import From File:</label>
+            <div style="display: flex; overflow-y: auto; align-items: center;">
+              <button id="Importfromfile"
+                      onclick="document.getElementById('importmenu').close();"
+                      class="editbutton"
+                      style="color: white; height: 25px; width: 70px;font-size:  15px;">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <input id="jsonFile"
+               type="file"
+               accept=".json"
+               style="color: blue;"
+               hidden />
+        <label id="thefropdownforthejsonfilesthatididntnamebeforeforsomereason" for="jsonFile"
+               class="box fileselector"
+               style="width: 100%; flex-grow: 1; align-items: center; justify-content: center; resize: none; display: flex; font-family: sans-serif; font-weight: bold; overflow: visible;">
+          Import
+        </label>
+      </div>
+      <div style="width: auto; height: 4px; background-color: #333; margin: 10px -4px; border-radius: 2px;"></div>
+      <div style="display: flex; flex-direction: column; height: 100%; width: 100%">
+        <!-- this is *hopefully* going to make the things separate, and it will work -->
+        <div id="ImportMenuBar">
+          <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between">
+            <label style="font-color: white; font-family: sans-serif;">Import From Text:</label>
+            <div style="display: flex; overflow-y: auto; align-items: center;">
+              <button id="Importfromtext"
+                      onclick="document.getElementById('importmenu').close();"
+                      class="editbutton"
+                      style="color: white; height: 25px; width: 70px;font-size:  15px;">Cancel</button>
+            </div>
+          </div>
+        </div>
+        <textarea id="jsonimporttextbox"
+                  class="box"
+                  style="width: 100%; flex-grow: 1; resize: none;"></textarea>
+
+      </div>
+    </div>
+      <div style="width: auto; height: 4px; background-color: #333; margin: 10px -4px; border-radius: 2px;"></div>
+      <div id="samelinething2thesequel:electricboogaloo">
+      <label>hello</label>
+      </div>
+  </div>
+</dialog>
+
+        
+        
+        
+        
+        
+        
+        
+        
         <!-- i tried to make separator line so that it could be round, and not have any weird breaks... but ill fix it later
 
         <div style="width: 100%; height: 3px; background-color: #333; margin: 25px auto; border-radius: 2px;"></div>
