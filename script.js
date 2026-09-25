@@ -38,17 +38,13 @@ function copyCode() {
   }, 2500);
 }
 
-const getjsonfile = document.getElementById("jsonFile");
-getjsonfile.addEventListener("change", function(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const jsonreader = new FileReader();
-  jsonreader.onload = function(e) {
-    try {
-      const fileString = e.target.result;
-      dataobj = JSON.parse(fileString);
-      console.log("JSON successfully loaded into variable:", dataobj);
-      document.getElementById("samelinething")
+
+
+
+function loadjsonfilebutlikeactuallydoit__wait_idkifthisisdefinedanywhereelseandiwontcheckbutthisbeingreallylongisprobablynotnescisarry() {
+    dataobj = predataobj
+    document.getElementById('importmenu').close();
+    document.getElementById("samelinething2thesequel:electricboogaloo")
         .append(checks);
       document.getElementById("oppositeends")
         .append(showjsonbutton);
@@ -60,12 +56,74 @@ getjsonfile.addEventListener("change", function(event) {
         path = [];
       }
       setkeypathurl();
+}
+
+
+const dropArea = document.getElementById('thefropdownforthejsonfilesthatididntnamebeforeforsomereason');
+const fileInput = document.getElementById('jsonFile');
+
+
+
+
+function processFile(file) {
+  if (!file) return;
+  const jsonreader = new FileReader();
+  jsonreader.onload = function(e) {
+    try {
+      const fileString = e.target.result;
+      predataobj = JSON.parse(fileString)
+      document.getElementById('jsonimporttextbox').textContent = JSON.stringify(predataobj, null, 2);
     } catch (error) {
       console.error("Error parsing JSON. Make sure the file is valid.", error);
     }
   };
   jsonreader.readAsText(file);
+};
+
+fileInput.addEventListener("change", function(event) {
+    const file = event.target.files[0];
+    processFile(file);
 });
+
+
+fileInput.addEventListener("change", function(event) {
+    const file = event.target.files[0];
+    processFile(file);
+});
+
+// Preventing default browser behavior when dragging a file over the container
+dropArea.addEventListener('dragover', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+});
+dropArea.addEventListener('dragenter', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+});
+dropArea.addEventListener('dragleave', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+});
+
+// Handling dropping files into the area
+dropArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+  // Getting the list of dragged files
+
+
+  // Checking if there are any files
+  if (e.dataTransfer.files.length) {
+    // Assigning the files to the hidden input from the first step
+    document.getElementById('jsonFile').files = e.dataTransfer.files;
+    const file = e.dataTransfer.files[0];
+    processFile(file);
+  }
+});
+
+
+
 
 function editdecripion() {
   let temppath = path.flatMap((val, i) =>
@@ -75,7 +133,6 @@ function editdecripion() {
 
   const deepTarget = temppath.slice(0, (temppath.length - 1))
     .reduce((currentDepth, key) => {
-      // If the next nested object doesn't exist, create it
       if (!(key in currentDepth)) {
         console.error('... this is probably your fault for editing dataobj or path while editing an the description');
       }
@@ -189,6 +246,11 @@ function editchildren() {
 }
 
 
+
+
+
+
+
 function banana() {
   keypath = path.flatMap((val, i) =>
     i < path.length - 1 ? [val, "children"] : [val],
@@ -200,7 +262,6 @@ function banana() {
       (typeof currentLevel[key] === 'object' ? currentLevel[key] : key) :
       undefined;
   }, dataobj)
-  console.log(keyname)
   return [keyname]
 }
 
