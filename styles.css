@@ -50,6 +50,9 @@ html {
 }
 
 .fileselector:hover {
+  background-color: #444;
+}
+.fileselector:active {
   background-color: #333;
 }
 
