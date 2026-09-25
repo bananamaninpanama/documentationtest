@@ -139,3 +139,9 @@ dialog::backdrop {
   background: #00000050;
   backdrop-filter: blur(5px);
 }
+
+/*why would i make a custom class when can just do this(i just learned you do this)*/
+#thefropdownforthejsonfilesthatididntnamebeforeforsomereason.drag-over {
+  background: #e2e6ea;
+  border-color: #0056b3;
+}
