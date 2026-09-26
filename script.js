@@ -1,5 +1,6 @@
 path = [];
 let dataobj = {};
+let predataobj = {}
 counter = 0;
 const checks = document.createRange()
   .createContextualFragment(`
@@ -42,7 +43,8 @@ function copyCode() {
 
 
 function loadjsonfilebutlikeactuallydoit__wait_idkifthisisdefinedanywhereelseandiwontcheckbutthisbeingreallylongisprobablynotnescisarry() {
-    dataobj = predataobj
+    console.log(predataobj);
+    dataobj = predataobj;
     document.getElementById('importmenu').close();
     document.getElementById("samelinething2thesequel:electricboogaloo")
         .append(checks);
