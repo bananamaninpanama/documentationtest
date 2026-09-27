@@ -8,3 +8,18 @@ import a json in THIS FORMAT:
 
 
 later ill add an option to make a new one from scratch
+
+
+
+to do:
+<br>
+  &emsp;-add a system to add new keys<br>
+  &emsp;-add a system to copy and paste keys<br>
+  &emsp;-add a thing in the error that tells you exactly where the error occured<br>
+  &emsp;-add a thing to convert a normal tree-json into a json in this format<br>
+  
+those are the only things i remember right now...<br>
+i should probably go to sleep, its like 11 pm
+
+also i just learned this interprets things with like html...<br>
+that wouldve been useful to know earlier
