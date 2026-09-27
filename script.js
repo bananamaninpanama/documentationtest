@@ -69,7 +69,7 @@ function checkifstringisvalidsecondpart(importedobject2, currpath = []) {
   Object.entries(importedobject2)
     .forEach(([key, value]) => {
       if(typeof value !== 'object') {
-        throw new Error(`the value of key at path: [ ` + [...currpath, key].join(' / ') + ` ] is not a json`)
+        throw new Error(`the value of key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] is not a json`)
       }
       
     let hasdesc = false
@@ -78,15 +78,15 @@ function checkifstringisvalidsecondpart(importedobject2, currpath = []) {
     .forEach(([keysecond, valuesecong]) => {
       if (keysecond === 'description') {
         if (typeof valuesecong !== 'string') {
-          throw new Error(`the value of the 'description' key for key at path: [ ` + [...currpath, key].join(' / ') + ` ] is not a string`)
+          throw new Error(`the value of the 'description' key for key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] is not a string`)
         }
         if (hasdesc){
-          throw new Error(`the key at path: [ ` + [...currpath, key].join(' / ') + ` ] has multiple 'description' keys`)
+          throw new Error(`the key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] has multiple 'description' keys`)
         }
         hasdesc = true
       } else if (keysecond === 'children') {
         if (typeof valuesecong !== 'object') {
-          throw new Error(`the value of the 'children' key for key at path: [ ` + [...currpath, key].join(' / ') + ` ] is not a json object`)
+          throw new Error(`the value of the 'children' key for key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] is not a json object`)
         }
         try {
         checkifstringisvalidsecondpart(valuesecong, [...currpath, key])
@@ -94,17 +94,17 @@ function checkifstringisvalidsecondpart(importedobject2, currpath = []) {
             throw new Error(error)
         }
         if (haschild){
-          throw new Error(`the key at path: [ ` + [...currpath, key].join(' / ') + ` ] has multiple 'children' keys`)
+          throw new Error(`the key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] has multiple 'children' keys`)
         }
         haschild = true
       } else {
-        throw new Error(`the key at path: [ ` + [...currpath, key].join(' / ') + ` ] has a subkey that was not 'description' or 'children'`)
+        throw new Error(`the key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] has a subkey that was not 'description' or 'children'`)
       }
     })
     if (!hasdesc) {
-        throw new Error(`a key at path: [ ` + [...currpath, key].join(' / ') + ` ] lacks a 'description' subkey`)
+        throw new Error(`a key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] lacks a 'description' subkey`)
     } else if (!haschild) {
-        throw new Error(`a key at path: [ ` + [...currpath, key].join(' / ') + ` ] lacks a 'children' subkey`)
+        throw new Error(`a key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] lacks a 'children' subkey`)
     }
     })
 }
@@ -526,7 +526,7 @@ function render(inputpath, obj, currpath = [], currentlist = [], under = true) {
         .join("")
         .replace(/true/g, "&thinsp;&thinsp;&ensp;")
         .replace(/false/g, "│&thinsp;");
-      var testcurrpath = [...currpath, key].join(' / ');
+      var testcurrpath = [...currpath, key].map(item => `"${item}"`).join(' / ');
       let outerindex = index
       key.split(/\r?\n/)
         .forEach((line, index) => {
