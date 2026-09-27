@@ -65,12 +65,11 @@ const dropArea = document.getElementById('importmenu');
 const fileInput = document.getElementById('jsonFile');
 
 
-function checkifstringisvalidsecondpart(importedobject2) {
-  
+function checkifstringisvalidsecondpart(importedobject2, currpath = []) {
   Object.entries(importedobject2)
     .forEach(([key, value]) => {
       if(typeof value !== 'object') {
-        throw new Error(`a key's value is not a json`)
+        throw new Error(`the value of key at path: [ ` + [...currpath, key].join(' / ') + ` ] is not a json`)
       }
       
     let hasdesc = false
@@ -79,33 +78,33 @@ function checkifstringisvalidsecondpart(importedobject2) {
     .forEach(([keysecond, valuesecong]) => {
       if (keysecond === 'description') {
         if (typeof valuesecong !== 'string') {
-          throw new Error(`a key's 'description' key's value is not a string`)
+          throw new Error(`the value of the 'description' key for key at path: [ ` + [...currpath, key].join(' / ') + ` ] is not a string`)
         }
         if (hasdesc){
-          throw new Error(`a key has the 'description' subkey at least twice`)
+          throw new Error(`the key at path: [ ` + [...currpath, key].join(' / ') + ` ] has multiple 'description' keys`)
         }
         hasdesc = true
       } else if (keysecond === 'children') {
         if (typeof valuesecong !== 'object') {
-          throw new Error(`a key's 'children' key's value is not a json object`)
+          throw new Error(`the value of the 'children' key for key at path: [ ` + [...currpath, key].join(' / ') + ` ] is not a json object`)
         }
         try {
-        checkifstringisvalidsecondpart(valuesecong)
+        checkifstringisvalidsecondpart(valuesecong, [...currpath, key])
         } catch(error) {
             throw new Error(error)
         }
         if (haschild){
-          throw new Error(`a key has the 'children' subkey at least twice`)
+          throw new Error(`the key at path: [ ` + [...currpath, key].join(' / ') + ` ] has multiple 'children' keys`)
         }
         haschild = true
       } else {
-        throw new Error(`a key had a subkey that was not 'description' or 'children'`)
+        throw new Error(`the key at path: [ ` + [...currpath, key].join(' / ') + ` ] has a subkey that was not 'description' or 'children'`)
       }
     })
     if (!hasdesc) {
-        throw new Error(`a key lacked a 'description' subkey`)
+        throw new Error(`a key at path: [ ` + [...currpath, key].join(' / ') + ` ] lacks a 'description' subkey`)
     } else if (!haschild) {
-        throw new Error(`a key lacked a 'children' subkey`)
+        throw new Error(`a key at path: [ ` + [...currpath, key].join(' / ') + ` ] lacks a 'children' subkey`)
     }
     })
 }
@@ -113,9 +112,11 @@ function checkifstringisvalidsecondpart(importedobject2) {
 function checkifstringisvalid(importedobject) {  
   document.getElementById('errorfortheimporttextbox').style.color = "red";
   document.getElementById("Importfromtext").disabled = true;
+  document.getElementById("beutifyimportjson").disabled = true;
   if (typeof importedobject === 'string') {
     try {
       importedobject = JSON.parse(importedobject)
+      document.getElementById("beutifyimportjson").disabled = false;
     } catch {
       document.getElementById('errorfortheimporttextbox').textContent = 'string is not a valid json'
       return
@@ -123,6 +124,8 @@ function checkifstringisvalid(importedobject) {
   } else if(typeof importedobject !== 'object') {
     document.getElementById('errorfortheimporttextbox').textContent = 'not a valid json object'
     return
+  } else if(typeof importedobject === 'object') {
+    document.getElementById("beutifyimportjson").disabled = false;
   }
   try {
     checkifstringisvalidsecondpart(importedobject)
@@ -523,7 +526,7 @@ function render(inputpath, obj, currpath = [], currentlist = [], under = true) {
         .join("")
         .replace(/true/g, "&thinsp;&thinsp;&ensp;")
         .replace(/false/g, "│&thinsp;");
-      var testcurrpath = [...currpath, key];
+      var testcurrpath = [...currpath, key].join(' / ');
       let outerindex = index
       key.split(/\r?\n/)
         .forEach((line, index) => {

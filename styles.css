@@ -158,3 +158,13 @@ dialog::backdrop {
   color: grey;
   border-color: #706347;
 }
+
+#beutifyimportjson {
+  color: white;
+}
+
+#beutifyimportjson:disabled {
+  background-color: #363a42;
+  color: grey;
+  border-color: #706347;
+}

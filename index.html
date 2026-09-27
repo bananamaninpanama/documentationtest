@@ -191,8 +191,14 @@
         <div id="ImportMenuBar">
           <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between">
             <label style="font-color: white; font-family: sans-serif;">Text to Import:</label>
-          
+
             <div style="display: flex; overflow-y: auto; align-items: center;">
+              <button id="beutifyimportjson"
+                      onclick="document.getElementById('jsonimporttextbox').value = JSON.stringify(JSON.parse(document.getElementById('jsonimporttextbox').value), null, 2);"
+                      class="editbutton">
+                      beautify json
+                      </button>
+                      &ensp;
             </label>
               <input id="jsonFile"
                type="file"
