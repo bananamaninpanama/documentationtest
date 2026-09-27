@@ -141,7 +141,20 @@ dialog::backdrop {
 }
 
 /*why would i make a custom class when can just do this(i just learned you do this)*/
-#thefropdownforthejsonfilesthatididntnamebeforeforsomereason.drag-over {
+#importmenu.drag-over {
   background: #e2e6ea;
   border-color: #0056b3;
+}
+
+#Importfromtext {
+  color: white;
+  height: 25px;
+  width: 70px;
+  font-size:  15px;
+}
+
+#Importfromtext:disabled {
+  background-color: #363a42;
+  color: grey;
+  border-color: #706347;
 }
