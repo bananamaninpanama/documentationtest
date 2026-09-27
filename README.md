@@ -15,7 +15,7 @@ to do:
 <br>
   &emsp;-add a system to add new keys<br>
   &emsp;-add a system to copy and paste keys<br>
-  &emsp; ̶-̶a̶d̶d̶ ̶a̶ ̶t̶h̶i̶n̶g̶ ̶i̶n̶ ̶t̶h̶e̶ ̶e̶r̶r̶o̶r̶ ̶t̶h̶a̶t̶ ̶t̶e̶l̶l̶s̶ ̶y̶o̶u̶ ̶e̶x̶a̶c̶t̶l̶y̶ ̶w̶h̶e̶r̶e̶ ̶t̶h̶e̶ ̶e̶r̶r̶o̶r̶ ̶o̶c̶c̶u̶r̶e̶d̶<br>
+  &emsp;-̷a̷d̷d̷ ̷a̷ ̷t̷h̷i̷n̷g̷ ̷i̷n̷ ̷t̷h̷e̷ ̷e̷r̷r̷o̷r̷ ̷t̷h̷a̷t̷ ̷t̷e̷l̷l̷s̷ ̷y̷o̷u̷ ̷e̷x̷a̷c̷t̷l̷y̷ ̷w̷h̷e̷r̷e̷ ̷t̷h̷e̷ ̷e̷r̷r̷o̷r̷ ̷o̷c̷c̷u̷r̷e̷d̷<br>
   &emsp;&emsp;-add a thing where you can see what line/character(or column, idk what they are called) the first error occured on.<br>
   &emsp;-add a thing to convert a normal tree-json into a json in this format<br>
   &emsp;-add more options to the 'beautify json' button, like 'make it only one column', 'how many spaces to increase for each new indent', etc<br>
