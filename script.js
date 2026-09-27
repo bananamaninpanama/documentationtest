@@ -130,8 +130,7 @@ function checkifstringisvalid(importedobject) {
     document.getElementById('errorfortheimporttextbox').style.color = "green";
     document.getElementById('errorfortheimporttextbox').textContent = 'valid json!'
   } catch(error) {
-    console.log('error')
-    document.getElementById('errorfortheimporttextbox').textContent = error
+    document.getElementById('errorfortheimporttextbox').textContent = error.message
   }
 }
 
