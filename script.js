@@ -61,8 +61,75 @@ function loadjsonfilebutlikeactuallydoit__wait_idkifthisisdefinedanywhereelseand
 }
 
 
-const dropArea = document.getElementById('thefropdownforthejsonfilesthatididntnamebeforeforsomereason');
+const dropArea = document.getElementById('importmenu');
 const fileInput = document.getElementById('jsonFile');
+
+
+function checkifstringisvalidsecondpart(importedobject2) {
+  
+  Object.entries(importedobject2)
+    .forEach(([key, value]) => {
+      if(typeof value !== 'object') {
+        throw new Error(false + `because a key's value is not a json`)
+      }
+      
+    let hasdesc = false
+    let haschild = false
+    Object.entries(value)
+    .forEach(([keysecond, valuesecong]) => {
+      if (keysecond === 'description') {
+        if (typeof valuesecong !== 'string') {
+          throw new Error(false + `because a key's 'description' key's value is not a string`)
+        }
+        if (hasdesc){
+          throw new Error(false + `because a key has the 'description' subkey at least twice`)
+        }
+        hasdesc = true
+      } else if (keysecond === 'children') {
+        if (typeof valuesecong !== 'object') {
+          throw new Error(false + `because a key's 'children' key's value is not a json object`)
+        }
+        checkifstringisvalidsecondpart(valuesecong)
+        if (haschild){
+          throw new Error(false + `because a key has the 'children' subkey at least twice`)
+        }
+        haschild = true
+      } else {
+        throw new Error(false + `because a key had a subkey that was not 'description' or 'children'`)
+      }
+    })
+    if (!hasdesc) {
+        throw new Error(false + `because a key lacked a 'description' subkey`)
+    } else if (!haschild) {
+        throw new Error(false + `because a key lacked a 'children' subkey`)
+    }
+    })
+}
+
+function checkifstringisvalid(importedobject) {  
+  document.getElementById("Importfromtext").disabled = true;
+  if (typeof importedobject === 'string') {
+    try {
+      importedobject = JSON.parse(importedobject)
+    } catch {
+      return
+    }
+  } else if(typeof importedobject !== 'object') {
+    return
+  }
+  try {
+    checkifstringisvalidsecondpart(importedobject)
+    document.getElementById("Importfromtext").disabled = false;
+  } catch(error) {
+    console.log(error)
+    document.getElementById('errorfortheimporttextbox').value = error
+  }
+}
+
+document.getElementById("jsonimporttextbox").addEventListener("input", function() {
+  checkifstringisvalid(document.getElementById('jsonimporttextbox').value)
+});
+
 
 
 
@@ -75,6 +142,7 @@ function processFile(file) {
       const fileString = e.target.result;
       predataobj = JSON.parse(fileString)
       document.getElementById('jsonimporttextbox').textContent = JSON.stringify(predataobj, null, 2);
+      checkifstringisvalid(document.getElementById('jsonimporttextbox').value)
     } catch (error) {
       console.error("Error parsing JSON. Make sure the file is valid.", error);
     }
