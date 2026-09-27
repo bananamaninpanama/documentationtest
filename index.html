@@ -156,7 +156,7 @@
                style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
             <div id="samelinething"
                  style="display: flex; overflow-y: auto;">
-              <button onclick="document.getElementById('importmenu').showModal();"
+              <button onclick="checkifstringisvalid(document.getElementById('jsonimporttextbox').value); document.getElementById('importmenu').showModal();"
                      class="box fileselector"
                      style="padding: 10px 20px; display: inline-block; font-family: sans-serif; font-weight: bold; overflow: visible;">
                 Import
@@ -185,21 +185,16 @@
        100%;">
     
     <div style="display: flex; flex-direction: column; height: 100%; width: 100%;">
+      
       <div style="display: flex; flex-direction: column; height: 100%; width: 100%">
         <!-- this is *hopefully* going to make the things separate, and it will work -->
         <div id="ImportMenuBar">
           <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between">
-            <label style="font-color: white; font-family: sans-serif;">Import From File:</label>
+            <label style="font-color: white; font-family: sans-serif;">Text to Import:</label>
+          <label id="errorfortheimporttextbox" style="font-color: white; font-family: sans-serif;">
             <div style="display: flex; overflow-y: auto; align-items: center;">
-              <button id="Importfromfile"
-                      onclick="document.getElementById('importmenu').close();"
-                      class="editbutton"
-                      style="color: white; height: 25px; width: 70px;font-size:  15px;">Cancel</button>
-            </div>
-          </div>
-        </div>
-
-        <input id="jsonFile"
+            </label>
+              <input id="jsonFile"
                type="file"
                accept=".json"
                style="color: blue;"
@@ -207,20 +202,14 @@
         <label id="thefropdownforthejsonfilesthatididntnamebeforeforsomereason" for="jsonFile"
                class="box fileselector"
                style="width: 100%; flex-grow: 1; align-items: center; justify-content: center; resize: none; display: flex; font-family: sans-serif; font-weight: bold; overflow: visible;">
-          Import
+          Load Text from File
         </label>
-      </div>
-      <div style="width: auto; height: 4px; background-color: #333; margin: 10px -4px; border-radius: 2px;"></div>
-      <div style="display: flex; flex-direction: column; height: 100%; width: 100%">
-        <!-- this is *hopefully* going to make the things separate, and it will work -->
-        <div id="ImportMenuBar">
-          <div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between">
-            <label style="font-color: white; font-family: sans-serif;">Import From Text:</label>
-            <div style="display: flex; overflow-y: auto; align-items: center;">
+              &ensp;
               <button id="Importfromtext"
                       onclick="predataobj = JSON.parse(document.getElementById('jsonimporttextbox').value); loadjsonfilebutlikeactuallydoit__wait_idkifthisisdefinedanywhereelseandiwontcheckbutthisbeingreallylongisprobablynotnescisarry();"
-                      class="editbutton"
-                      style="color: white; height: 25px; width: 70px;font-size:  15px;">import</button>
+                      class="editbutton">
+                      import
+                      </button>
             </div>
           </div>
         </div>
