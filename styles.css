@@ -168,3 +168,19 @@ dialog::backdrop {
   color: grey;
   border-color: #706347;
 }
+
+#testingthedragovermenu {
+  pointer-events: none;
+}
+#testingthedragovermenu:popover-open {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  color: white;
+  background-color: blue;
+  font-size: 20px;
+  font-weight: bold
+  font-family: 'Comic Sans MS', cursive;
+}
