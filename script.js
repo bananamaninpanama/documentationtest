@@ -1,6 +1,7 @@
 path = [];
 let dataobj = {};
 let predataobj = {}
+let dragCounter = 0;
 counter = 0;
 const checks = document.createRange()
   .createContextualFragment(`
@@ -173,23 +174,41 @@ fileInput.addEventListener("change", function(event) {
 });
 
 // Preventing default browser behavior when dragging a file over the container
-dropArea.addEventListener('dragover', function(e) {
+window.addEventListener('dragover', function(e) {
+    if ([...e.dataTransfer.items].some(item => item.kind === 'file')) {
+        
   e.preventDefault();
   e.stopPropagation();
+  document.getElementById('testingthedragovermenu').showPopover();
+  console.log('isover')
+    }
 });
-dropArea.addEventListener('dragenter', function(e) {
+window.addEventListener('dragenter', function(e) {
+    dragCounter++;
+  if (dragCounter === 1) {
+ if ([...e.dataTransfer.items].some(item => item.kind === 'file')) {
   e.preventDefault();
   e.stopPropagation();
+  document.getElementById('testingthedragovermenu').showPopover();
+  console.log('entered')
+ }
+    }
 });
-dropArea.addEventListener('dragleave', function(e) {
+window.addEventListener('dragleave', function(e) {
+    dragCounter--;
+  if (dragCounter === 0) {
   e.preventDefault();
   e.stopPropagation();
+  document.getElementById('testingthedragovermenu').hidePopover();
+  console.log('left')
+  }
 });
 
 // Handling dropping files into the area
-dropArea.addEventListener('drop', function(e) {
+window.addEventListener('drop', function(e) {
     e.preventDefault();
     e.stopPropagation();
+    document.getElementById('testingthedragovermenu').hidePopover();
 
   // Getting the list of dragged files
 
