@@ -3,6 +3,7 @@ let dataobj = {};
 let predataobj = {}
 let dragCounter = 0;
 counter = 0;
+let CLASSES = {};
 const checks = document.createRange()
   .createContextualFragment(`
 <div style="display: flex; align-items: center;">
@@ -74,6 +75,7 @@ function checkifstringisvalidsecondpart(importedobject2, currpath = []) {
       }
       
     let hasdesc = false
+    let hasattribdesc = false
     let haschild = false
     Object.entries(value)
     .forEach(([keysecond, valuesecong]) => {
@@ -85,6 +87,20 @@ function checkifstringisvalidsecondpart(importedobject2, currpath = []) {
           throw new Error(`the key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] has multiple 'description' keys`)
         }
         hasdesc = true
+      } else if (keysecond === 'descriptionvalues') {
+        if (typeof valuesecong !== 'object') {
+          throw new Error(`the value of the 'descriptionvalues' key for key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] is not a json object`)
+        }
+        if (hasattribdesc){
+          throw new Error(`the key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] has multiple 'descriptionvalues' keys`)
+        }
+        Object.entries(valuesecong)
+        .forEach(([keythird, valuethird]) => {
+            if (typeof valuethird !== 'string') {
+          throw new Error(`key at path: [ ` + [...currpath, key, "descriptionvalues", keythird].map(item => `"${item}"`).join(' / ') + ` ] is not a string`)
+        }
+        })
+        hasattribdesc = true
       } else if (keysecond === 'children') {
         if (typeof valuesecong !== 'object') {
           throw new Error(`the value of the 'children' key for key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] is not a json object`)
@@ -92,18 +108,18 @@ function checkifstringisvalidsecondpart(importedobject2, currpath = []) {
         try {
         checkifstringisvalidsecondpart(valuesecong, [...currpath, key])
         } catch(error) {
-            throw new Error(error)
+            throw new Error(error.message)
         }
         if (haschild){
           throw new Error(`the key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] has multiple 'children' keys`)
         }
         haschild = true
       } else {
-        throw new Error(`the key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] has a subkey that was not 'description' or 'children'`)
+        throw new Error(`the key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] has a subkey that was not 'description', 'descriptionvalues', or 'children'`)
       }
     })
-    if (!hasdesc) {
-        throw new Error(`a key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] lacks a 'description' subkey`)
+    if (!hasdesc && !hasattribdesc) {
+        throw new Error(`a key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] lacks a 'description' and/or a 'descriptionvalues' subkey`)
     } else if (!haschild) {
         throw new Error(`a key at path: [ ` + [...currpath, key].map(item => `"${item}"`).join(' / ') + ` ] lacks a 'children' subkey`)
     }
@@ -139,7 +155,7 @@ function checkifstringisvalid(importedobject) {
 }
 
 document.getElementById("jsonimporttextbox").addEventListener("input", function() {
-  checkifstringisvalid(document.getElementById('jsonimporttextbox').value)
+  checkifstringisvalid(JSON.parse(document.getElementById('jsonimporttextbox').value).tree)
 });
 
 
@@ -154,7 +170,7 @@ function processFile(file) {
       const fileString = e.target.result;
       predataobj = JSON.parse(fileString);
       document.getElementById('jsonimporttextbox').value = JSON.stringify(predataobj, null, 2);
-      checkifstringisvalid(document.getElementById('jsonimporttextbox').value)
+      checkifstringisvalid(JSON.parse(document.getElementById('jsonimporttextbox').value).tree)
     } catch (error) {
       console.error("Error parsing JSON. Make sure the file is valid.", error);
     }
@@ -180,7 +196,6 @@ window.addEventListener('dragover', function(e) {
   e.preventDefault();
   e.stopPropagation();
   document.getElementById('testingthedragovermenu').showPopover();
-  console.log('isover')
     }
 });
 window.addEventListener('dragenter', function(e) {
@@ -190,7 +205,6 @@ window.addEventListener('dragenter', function(e) {
   e.preventDefault();
   e.stopPropagation();
   document.getElementById('testingthedragovermenu').showPopover();
-  console.log('entered')
  }
     }
 });
@@ -200,7 +214,6 @@ window.addEventListener('dragleave', function(e) {
   e.preventDefault();
   e.stopPropagation();
   document.getElementById('testingthedragovermenu').hidePopover();
-  console.log('left')
   }
 });
 
@@ -230,13 +243,20 @@ function editdecripion() {
       i < path.length - 1 ? [val, "children"] : [val],
     )
     .concat("description")
-
+let descorattribdesc = 0
   const deepTarget = temppath.slice(0, (temppath.length - 1))
     .reduce((currentDepth, key) => {
+        if (key === 'description') {
       if (!(key in currentDepth)) {
         console.error('... this is probably your fault for editing dataobj or path while editing an the description');
       }
       return currentDepth[key];
+    } else if (key === 'descriptionvalues') {
+        if (!(key in currentDepth)) {
+        console.error('... this is probably your fault for editing dataobj or path while editing an the description');
+      }
+      return currentDepth['descriptionvalues'][Object.keys(currentDepth['descriptionvalues'])[0]];
+    }
     }, dataobj);
   deepTarget[temppath[temppath.length - 1]] = document.getElementById('editdescriptionbox')
     .value;
@@ -409,16 +429,30 @@ function getparentofcurrentkeyasbuttons() {
         currentLevel[key] :
         undefined;
     }, dataobj)
+    let trueinsertvalue = ''
+    if (currentparent.hasOwnProperty('description')) {
   let sliceidx1 = (currentparent["description"])
     .indexOf("\n")
-  let sliceidx2 = (currentparent["description"])
-    .indexOf("\n", sliceidx1 = -1 ? currentparent["description"].length : sliceidx1 + 1)
-  let insertvalue = (currentparent["description"].slice(0, sliceidx2 = -1 ? currentparent["description"].length : sliceidx2))
+  let sliceidx2 = (currentparent.description)
+    .indexOf("\n", sliceidx1 = -1 ? currentparent.description.length : sliceidx1 + 1)
+  let insertvalue = (currentparent.description.slice(0, sliceidx2 = -1 ? currentparent.description.length : sliceidx2))
     .slice(0, 60)
+  trueinsertvalue = `` + insertvalue + (insertvalue.length === currentparent.description.length ? '' : '...')
+    } else if (currentparent.hasOwnProperty('descriptionvalues')) {
+  let sliceidx1 = (currentparent["descriptionvalues"][Object.keys(currentparent["descriptionvalues"])[0]])
+    .indexOf("\n")
+  let sliceidx2 = (currentparent["descriptionvalues"][Object.keys(currentparent["descriptionvalues"])[0]])
+    .indexOf("\n", sliceidx1 = -1 ? currentparent["descriptionvalues"][Object.keys(currentparent["descriptionvalues"])[0]].length : sliceidx1 + 1)
+  let insertvalue = `` + (currentparent["descriptionvalues"][Object.keys(currentparent["descriptionvalues"])[0]].slice(0, sliceidx2 = -1 ? currentparent["descriptionvalues"][Object.keys(currentparent["descriptionvalues"])[0]].length : sliceidx2))
+    .slice(0, 60)
+  trueinsertvalue = `` + insertvalue + (insertvalue.length === currentparent["descriptionvalues"][Object.keys(currentparent["descriptionvalues"])[0]].length ? '' : '...')
+    } else {
+        console.error('...this is probably your fault for editing the json manually in the console or something to get rid of a description key. i might change this at some point to have a fallback of just making a description key that is blank')
+    }
   valuetoreturn = `<div id="parent" style="display: flex; flex-direction: column;">
   <button class="childrenpath" onclick="path.pop(); setkeypathurl();" style="flex: 1; display: flex; flex-direction: column;">
     <label style="font-size: 20px;">${parentkey}</label>
-    <label style="font-size: 8px; display: inline-block; color: #fffd6ee9">${insertvalue}${(insertvalue.length === currentparent["description"].length ? '' : '...')}</label>
+    <label style="font-size: 8px; display: inline-block; color: #fffd6ee9">${trueinsertvalue}</label>
   </button>`
 
 
@@ -462,6 +496,7 @@ function setkeypathurl() {
       */
 
     } else {
+        
       descholder.innerHTML =
         `<div style="display: flex; overflow-y: auto; align-items: center; justify-content: space-between;">
             <label style="color: yellow; font-family: Arial; font-weight: bold; font-size: 30px;">Name:</label>
@@ -484,6 +519,15 @@ function setkeypathurl() {
                 )
                 .concat("description")
                 .reduce((currentLevel, key) => {
+                if (key === 'description' && !(currentLevel && currentLevel[key] !== undefined)) {
+                    if (key === 'description' && !(currentLevel && currentLevel['descriptionvalues'] !== undefined)) {
+                        console.error('...this is probably your fault for editing the json manually in the console or something to get rid of a description key. i might change this at some point to have a fallback of just making a description key that is blank')
+                    } else {
+                        return currentLevel && currentLevel['descriptionvalues'][Object.keys(currentLevel['descriptionvalues'])[0]] !== undefined ?
+                        currentLevel['descriptionvalues'][Object.keys(currentLevel['descriptionvalues'])[0]] :
+                        undefined;
+                    }
+                }
                   return currentLevel && currentLevel[key] !== undefined ?
                     currentLevel[key] :
                     undefined;
@@ -545,7 +589,8 @@ function render(inputpath, obj, currpath = [], currentlist = [], under = true) {
         .join("")
         .replace(/true/g, "&thinsp;&thinsp;&ensp;")
         .replace(/false/g, "│&thinsp;");
-      var testcurrpath = [...currpath, key].map(item => `"${item}"`).join(' / ');
+      var testcurrpath = [...currpath, key];
+      var testcurrpathbutasastring = testcurrpath.map(item => `"${item}"`).join(' / ')
       let outerindex = index
       key.split(/\r?\n/)
         .forEach((line, index) => {
