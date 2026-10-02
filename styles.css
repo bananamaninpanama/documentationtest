@@ -184,3 +184,13 @@ dialog::backdrop {
   font-weight: bold
   font-family: 'Comic Sans MS', cursive;
 }
+
+.editbutton:focus {
+  border-color: #FF9D3B;
+  outline: none;
+}
+/*gee i sure hope this lets me change things*/
+#whatdesctoshow, #whatdesctoshow::picker(select) {
+    background-color: #333;
+  appearance: base-select;
+}
