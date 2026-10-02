@@ -20,6 +20,7 @@ to do:
   &emsp;&emsp;&emsp;-add a highlight to where the error occured in the text<br>
   &emsp;-add a thing to convert a normal tree-json into a json in this format<br>
   &emsp;-add more options to the 'beautify json' button, like 'make it only one column', 'how many spaces to increase for each new indent', etc<br>
+  &emsp;-add a tutorial in the README.md, and a 'hint' button, on every section in the website<br>
   
 those are the only things i remember right now...<br>
 i should probably go to sleep, its like 11 pm
