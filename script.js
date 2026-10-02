@@ -8,12 +8,24 @@ let CLASSES = {};
 let descchoosertree = [];
 let treecharacteroptiontree = {
   true: {
-    true: "└",
-    false: "├"
+    true: {
+      true: `╵<span style="margin-left: -1ch; color: #ff4757;">╶</span>`,
+      false: `│<span style="margin-left: -1ch; color: #ff4757;">╶</span>`
+    },
+    false: {
+      true: ``,
+      false: `│`
+    }
   },
   false: {
-    true: "&thinsp;&thinsp;&thinsp;",
-    false: "│"
+    true: {
+      true: `└`,
+      false: `├`
+    },
+    false: {
+      true: `&thinsp;&thinsp;&thinsp;`,
+      false: `│`
+    }
   }
 }
 const checks = document.createRange()
@@ -199,8 +211,8 @@ function loadjsonfilebutlikeactuallydoit__wait_idkifthisisdefinedanywhereelseand
   }
   document.getElementById('importmenu')
     .close();
-    
-  
+
+
   addthecustomclasses()
   descchoosertree = getdefaultdesctree(dataobj);
   //debug
@@ -211,37 +223,39 @@ function loadjsonfilebutlikeactuallydoit__wait_idkifthisisdefinedanywhereelseand
 
 
 function getdefaultdesctree(object) {
-    let keydesclist = []
-    Object.entries(object).forEach(([key,value],index) => {
-        if (Object.hasOwn(value,'description')) {
-            keydesclist.push('')
-        } else if (Object.hasOwn(value,'descriptionvalues')) {
-            keydesclist.push(`-` + Object.keys(value['descriptionvalues'])[0])
-        } else {
-            keydesclist.push(`selectablekey`)
-        }
-        keydesclist.push(getdefaultdesctree(value['children']))
+  let keydesclist = []
+  Object.entries(object)
+    .forEach(([key, value], index) => {
+      if (Object.hasOwn(value, 'description')) {
+        keydesclist.push('')
+      } else if (Object.hasOwn(value, 'descriptionvalues')) {
+        keydesclist.push(`-` + Object.keys(value['descriptionvalues'])[0])
+      } else {
+        keydesclist.push(`selectablekey`)
+      }
+      keydesclist.push(getdefaultdesctree(value['children']))
     })
-    return keydesclist.flat();
+  return keydesclist.flat();
 }
 
 function getdefaultdescobjtree(object, indexcounter = 0) {
-    let keydesclist = structuredClone(object);
-    Object.entries(keydesclist).forEach(([key,value],index) => {
-        indexcounter++
-        let currentclass = descchoosertree[indexcounter - 1]
-        //debug
-        //console.log(currentclass)
-        if (currentclass.startsWith('-')) {
-            (value)['description'] = value['descriptionvalues'][currentclass.slice(1)]
-        } else if (currentclass.length === 0) {
-            value['description'] = value['description']
-        }
-        let subvalue = getdefaultdescobjtree(value['children'], indexcounter)
-        value['children'] = subvalue[0]
-        indexcounter = subvalue[1]
+  let keydesclist = structuredClone(object);
+  Object.entries(keydesclist)
+    .forEach(([key, value], index) => {
+      indexcounter++
+      let currentclass = descchoosertree[indexcounter - 1]
+      //debug
+      //console.log(currentclass)
+      if (currentclass.startsWith('-')) {
+        (value)['description'] = value['descriptionvalues'][currentclass.slice(1)]
+      } else if (currentclass.length === 0) {
+        value['description'] = value['description']
+      }
+      let subvalue = getdefaultdescobjtree(value['children'], indexcounter)
+      value['children'] = subvalue[0]
+      indexcounter = subvalue[1]
     })
-    return [keydesclist,indexcounter];
+  return [keydesclist, indexcounter];
 }
 
 
@@ -331,7 +345,7 @@ function checkifstringisvalid(importedobject) {
       importedobject = JSON.parse(importedobject)
       document.getElementById("beutifyimportjson")
         .disabled = false;
-    } catch(error) {
+    } catch (error) {
       document.getElementById('errorfortheimporttextbox')
         .textContent = `string is not a valid json:\n${error.message.replace('at position','\nPos:')}`
       return
@@ -371,8 +385,8 @@ function processFile(file) {
   if (!file) return;
   const jsonreader = new FileReader();
   jsonreader.onload = function(e) {
-      
-      const fileString = e.target.result;
+
+    const fileString = e.target.result;
     try {
       predataobj = JSON.parse(fileString);
       document.getElementById('jsonimporttextbox')
@@ -380,12 +394,12 @@ function processFile(file) {
       checkifstringisvalid(JSON.parse(document.getElementById('jsonimporttextbox')
         .value))
     } catch (error) {
-        predataobj = fileString;
+      predataobj = fileString;
       document.getElementById('jsonimporttextbox')
         .value = predataobj;
       checkifstringisvalid(document.getElementById('jsonimporttextbox')
         .value)
-        // i dont know why i didn't add this earlier, it just gave me a console error when it was invalid, and didn't import it.
+      // i dont know why i didn't add this earlier, it just gave me a console error when it was invalid, and didn't import it.
       // console.error("Error parsing JSON. Make sure the file is valid.", error);
     }
   };
@@ -682,56 +696,68 @@ function getparentofcurrentkeyasbuttons() {
   valuetoreturn = valuetoreturn + "</div>"
   return valuetoreturn
 }
+
 function updatdesignofdrpdwn(element) {
   const selectElement = element.querySelector('selectedcontent')
   const selectedClass = element.options[element.selectedIndex].className
   selectElement.className = selectedClass;
 }
-      
-document.getElementById('whatdesctoshow').addEventListener('change', (event) => {
-  updatdesignofdrpdwn(event.target);
-  settreefrom(event.target);
-  setkeypathurl();
-  updatdesignofdrpdwn(event.target);
-});
+
+document.getElementById('whatdesctoshow')
+  .addEventListener('change', (event) => {
+    updatdesignofdrpdwn(event.target);
+    settreefrom(event.target);
+    setkeypathurl();
+    updatdesignofdrpdwn(event.target);
+  });
 
 
 function updatewhatdesctoshow() {
-let setthewhatdesctoshowto = `
+  let setthewhatdesctoshowto = `
 <button>
   <selectedcontent></selectedcontent>
 </button>
 `;
-    let objectimportantthings = path.flatMap((val, i) =>i < path.length - 1 ? [val, "children"] : [val],).reduce((currentLevel, key) => {
-          
-          return currentLevel && currentLevel[key] !== undefined ? currentLevel[key] : undefined;
-        }, dataobj);
-        Object.entries(objectimportantthings).forEach(([key,value]) => {
-        if (key === 'description') {
-            setthewhatdesctoshowto = setthewhatdesctoshowto + `<option class="selectableoption" value="Default Description">Default Description</option>`;
-          } else if (key === 'descriptionvalues') {
-              Object.keys(value).forEach((classthing) => {
-              setthewhatdesctoshowto = setthewhatdesctoshowto + `<option class="customoption-${classthing}" value="customselectedkey-${classthing}">${classthing}</option>`;
-              });
-          }
-        });
-        
-        return setthewhatdesctoshowto;
-    
+//console.log(path);
+  let objectimportantthings = path.flatMap((val, i) =>
+  i < path.length - 1 ? [val, "children"] : [val],
+  )
+    .reduce((currentLevel, key) => {
+      //console.log(JSON.stringify(currentLevel) + ' ' + key)
+      return currentLevel && currentLevel[key] !== undefined ? currentLevel[key] : undefined;
+    }, getdefaultdescobjtree(dataobj)[0]);
+    //console.log(objectimportantthings);
+    //the line right below this one was where it was saying an error occured, because it 'was undefined or null'(see line 1059)
+  Object.entries(objectimportantthings)
+    .forEach(([key, value]) => {
+      if (key === 'description') {
+        setthewhatdesctoshowto = setthewhatdesctoshowto + `<option class="selectableoption" value="Default Description">Default Description</option>`;
+      } else if (key === 'descriptionvalues') {
+        Object.keys(value)
+          .forEach((classthing) => {
+            setthewhatdesctoshowto = setthewhatdesctoshowto + `<option class="customoption-${classthing}" value="customselectedkey-${classthing}">${classthing}</option>`;
+          });
+      }
+    });
+
+  return setthewhatdesctoshowto;
+
 }
 
-function settreefrom(element){
-    const selectedClass = element.value
-    if (selectedClass === 'Default Description') {
+function settreefrom(element) {
+  const selectedClass = element.value
+  if (selectedClass === 'Default Description') {
     descchoosertree[counterofcurrent - 1] = ''
   } else if (selectedClass.startsWith('customselectedkey-')) {
     descchoosertree[counterofcurrent - 1] = selectedClass.slice('customselectedkey'.length)
-    console.log(selectedClass);
-    console.log(descchoosertree);
+    //debug
+    //console.log(selectedClass);
+    //console.log(descchoosertree);
   }
 }
-function setelementfrom(element){
-    if (descchoosertree[counterofcurrent - 1] === '') {
+
+function setelementfrom(element) {
+  if (descchoosertree[counterofcurrent - 1] === '') {
     element.value = 'Default Description'
   } else if (descchoosertree[counterofcurrent - 1].startsWith('-')) {
     element.value = `customselectedkey` + descchoosertree[counterofcurrent - 1]
@@ -743,92 +769,113 @@ function setelementfrom(element){
 function setkeypathurl() {
   const listofkeys = document.getElementById("listofkeys");
   counter = 0;
-  if (Object.keys(dataobj).length === 0) {
-      document.getElementById('usrmsg').textContent = 'Import or add new keys'
-      document.getElementById('usrmsg').style.color = 'orange'
-      document.getElementById('usrmsg').style.display = 'block'
+  if (Object.keys(dataobj)
+    .length === 0) {
+    document.getElementById('usrmsg')
+      .textContent = 'Import or add new keys'
+    document.getElementById('usrmsg')
+      .style.color = 'orange'
+    document.getElementById('usrmsg')
+      .style.display = 'block'
   } else {
-  listofkeys.innerHTML = render(path, dataobj);
-  if (Array.isArray(path)) {
-    if (path.length === 0) {
-      document.getElementById('usrmsg').textContent = 'Select a key'
-      document.getElementById('usrmsg').style.color = 'yellow'
-      document.getElementById('usrmsg').style.display = 'block'
-      document.getElementById('keyinfoholder').style.display = 'none'
+    listofkeys.innerHTML = render(path, dataobj);
+    if (Array.isArray(path)) {
+      if (path.length === 0) {
+        document.getElementById('usrmsg')
+          .textContent = 'Select a key'
+        document.getElementById('usrmsg')
+          .style.color = 'yellow'
+        document.getElementById('usrmsg')
+          .style.display = 'block'
+        document.getElementById('keyinfoholder')
+          .style.display = 'none'
 
-      let errmessage = "WHAT ARE YOU DOING HERE?! I GOT RID OF THE EDIT 𝖣̶𝖤̶𝖲̶𝖢̶𝖱̶𝖨̶𝖯̶𝖳̶𝖨̶𝖮̶𝖭̶ BUTTON(s) FOR A REASON! (or maybe you tried to like, get the description from an invalid array(i dont think i implemented that, but like, i ran it when it tried to get the element with id 'select key' instead of 'descriptionbox' and it gave me this message), either way:) YOU SHOULDN'T BE HERE!!!!!"
+        let errmessage = "WHAT ARE YOU DOING HERE?! I GOT RID OF THE EDIT 𝖣̶𝖤̶𝖲̶𝖢̶𝖱̶𝖨̶𝖯̶𝖳̶𝖨̶𝖮̶𝖭̶ BUTTON(s) FOR A REASON! (or maybe you tried to like, get the description from an invalid array(i dont think i implemented that, but like, i ran it when it tried to get the element with id 'select key' instead of 'descriptionbox' and it gave me this message), either way:) YOU SHOULDN'T BE HERE!!!!!"
 
-      document.getElementById('editdescriptionbox')
-        .value = errmessage
-      document.getElementById('editnamebox')
-        .value = errmessage
-      document.getElementById('editchildrenbox')
-        .value = errmessage
+        document.getElementById('editdescriptionbox')
+          .value = errmessage
+        document.getElementById('editnamebox')
+          .value = errmessage
+        document.getElementById('editchildrenbox')
+          .value = errmessage
 
-      /* This code is probably redundant now, but i wont delete it incase i need it later.
-      if (document.getElementById("editbutton")) {
-         document.getElementById("editbutton")
-           .style.display = "none";
-       }
-       if (document.getElementById("editnamebutton")) {
-         document.getElementById("editnamebutton")
-           .style.display = "none";
-       }
-       if (document.getElementById("editchildrenbutton")) {
-         document.getElementById("editchildrenbutton")
-           .style.display = "none";
-       }
-       */
+        /* This code is probably redundant now, but i wont delete it incase i need it later.
+        if (document.getElementById("editbutton")) {
+           document.getElementById("editbutton")
+             .style.display = "none";
+         }
+         if (document.getElementById("editnamebutton")) {
+           document.getElementById("editnamebutton")
+             .style.display = "none";
+         }
+         if (document.getElementById("editchildrenbutton")) {
+           document.getElementById("editchildrenbutton")
+             .style.display = "none";
+         }
+         */
 
-    } else {
-      document.getElementById('usrmsg').style.display = 'none'
-      document.getElementById('keyinfoholder').style.display = 'block'
-      
-      
-    document.getElementById('whatdesctoshow').innerHTML = updatewhatdesctoshow();
+      } else {
+        document.getElementById('usrmsg')
+          .style.display = 'none'
+        document.getElementById('keyinfoholder')
+          .style.display = 'block'
 
-    
-    
-    
-        document.getElementById('namebox').textContent = banana()
-        document.getElementById('descriptionbox').textContent = path.flatMap((val, i) =>
-          i < path.length - 1 ? [val, "children"] : [val],
-        ).concat("description").reduce((currentLevel, key) => {
-          if (key === 'description' && !(currentLevel && currentLevel[key] !== undefined)) {
-            if (key === 'description' && !(currentLevel && currentLevel['descriptionvalues'] !== undefined)) {
-              console.error('...this is probably your fault for editing the json manually in the console or something to get rid of a description key. i might change this at some point to have a fallback of just making a description key that is blank')
-            } else {
-              return currentLevel && currentLevel['descriptionvalues'][Object.keys(currentLevel['descriptionvalues'])[0]] !== undefined ?
-                currentLevel['descriptionvalues'][Object.keys(currentLevel['descriptionvalues'])[0]] :
-                undefined;
+
+        document.getElementById('whatdesctoshow')
+          .innerHTML = updatewhatdesctoshow();
+
+
+
+
+        document.getElementById('namebox')
+          .textContent = banana()
+        document.getElementById('descriptionbox')
+          .textContent = path.flatMap((val, i) =>
+            i < path.length - 1 ? [val, "children"] : [val],
+          )
+          .concat("description")
+          .reduce((currentLevel, key) => {
+            if (key === 'description' && !(currentLevel && currentLevel[key] !== undefined)) {
+              if (key === 'description' && !(currentLevel && currentLevel['descriptionvalues'] !== undefined)) {
+                console.error('...this is probably your fault for editing the json manually in the console or something to get rid of a description key. i might change this at some point to have a fallback of just making a description key that is blank')
+              } else {
+                return currentLevel && currentLevel['descriptionvalues'][Object.keys(currentLevel['descriptionvalues'])[0]] !== undefined ?
+                  currentLevel['descriptionvalues'][Object.keys(currentLevel['descriptionvalues'])[0]] :
+                  undefined;
+              }
             }
-          }
-          return currentLevel && currentLevel[key] !== undefined ? currentLevel[key] : undefined;
-        }, getdefaultdescobjtree(dataobj)[0])
-        document.getElementById('parentbox').innerHTML = ((path.length < 2) ? "[Um. Well... lack of parents]" : getparentofcurrentkeyasbuttons())
-        document.getElementById('childrenbox').innerHTML = getchildrenofcurrentkeyasbuttons()
+            return currentLevel && currentLevel[key] !== undefined ? currentLevel[key] : undefined;
+          }, getdefaultdescobjtree(dataobj)[0])
+        document.getElementById('parentbox')
+          .innerHTML = ((path.length < 2) ? "[Um. Well... lack of parents]" : getparentofcurrentkeyasbuttons())
+        document.getElementById('childrenbox')
+          .innerHTML = getchildrenofcurrentkeyasbuttons()
 
 
-  setelementfrom(document.getElementById('whatdesctoshow'));
+        setelementfrom(document.getElementById('whatdesctoshow'));
 
-      document.getElementById('editnamebox')
-        .value = document.getElementById('namebox')
-        .textContent;
+        document.getElementById('editnamebox')
+          .value = document.getElementById('namebox')
+          .textContent;
 
-      document.getElementById('editnamebox')
-        .value = document.getElementById('namebox')
-        .textContent;
+        document.getElementById('editnamebox')
+          .value = document.getElementById('namebox')
+          .textContent;
 
-      document.getElementById('editdescriptionbox')
-        .value = document.getElementById('descriptionbox')
-        .textContent
+        document.getElementById('editdescriptionbox')
+          .value = document.getElementById('descriptionbox')
+          .textContent
+      }
+    } else {
+      document.getElementById('usrmsg')
+        .style.display = 'block'
+      document.getElementById('usrmsg')
+        .textContent = 'path is not valid. this is probably a mistake on my part.          UNLESS YOU CHANGED IT!'
+      document.getElementById('usrmsg')
+        .style.color = 'red'
+      document.getElementById('keyinfoholder')
+        .style.display = 'none'
     }
-  } else {
-    document.getElementById('usrmsg').style.display = 'block'
-    document.getElementById('usrmsg').textContent = 'path is not valid. this is probably a mistake on my part.          UNLESS YOU CHANGED IT!'
-      document.getElementById('usrmsg').style.color = 'red'
-      document.getElementById('keyinfoholder').style.display = 'none'
-  }
   }
 }
 
@@ -836,8 +883,8 @@ function setkeypathurl() {
 
 
 function addthecustomclasses() {
-    let dafaultcolors = '#55eeee'
-let selectedcolor = 'magenta'
+  let dafaultcolors = '#55eeee'
+  let selectedcolor = 'magenta'
   let style = ""
   if (document.getElementById("CLASSLIST") === null) {
     style = document.createElement("style");
@@ -866,43 +913,49 @@ let selectedcolor = 'magenta'
 }
 `
         style.textContent = style.textContent + `.selectedkey:link {
-  font-weight: bold;
-  color: `
+  font-weight: bold;`
         if (Object.hasOwn(value, 'selectedkeycolor')) {
-          style.textContent = style.textContent + `${value['selectedkeycolor']};`
+            let test =  value['selectedkeycolor']
+            //debug
+            //console.log("test" + test);
+          style.textContent = style.textContent + `
+color: ${test};
+-webkit-text-stroke: 0.05em ${test};`
         } else {
-          style.textContent = style.textContent + `magenta;`
+          style.textContent = style.textContent + `
+color: magenta;
+-webkit-text-stroke: 0.05em magenta;`
         }
         style.textContent = style.textContent + `
 }
 `
         seenbase = true
-        
-        
-        
-style.textContent = style.textContent + `.selectableoption {
+
+
+
+        style.textContent = style.textContent + `.selectableoption {
   overflow: auto;
   font-family: `
-if (Object.hasOwn(value, 'font-family')) {
+        if (Object.hasOwn(value, 'font-family')) {
           style.textContent = style.textContent + `${value['font-family']};`
         } else {
           style.textContent = style.textContent + `Arial;`
         }
 
-style.textContent = style.textContent + `      
+        style.textContent = style.textContent + `      
   background: linear-gradient(to bottom`
-if (Object.hasOwn(value, 'keycolor')) {
-        style.textContent = style.textContent + `, ${value['keycolor']} 50%`
-    dafaultcolors = value['keycolor']
-} else {
-    style.textContent = style.textContent + `, #55eeee 50%`
-}
- if (Object.hasOwn(value, 'selectedkeycolor')) {
-        style.textContent = style.textContent + `, ${value['selectedkeycolor']} 50%`
-  selectedcolor = value['selectedkeycolor']
-} else {
-    style.textContent = style.textContent + `, magenta 50%`
-}
+        if (Object.hasOwn(value, 'keycolor')) {
+          dafaultcolors = value['keycolor']
+          style.textContent = style.textContent + `, ${dafaultcolors} 50%`
+        } else {
+          style.textContent = style.textContent + `, #55eeee 50%`
+        }
+        if (Object.hasOwn(value, 'selectedkeycolor')) {
+          selectedcolor = value['selectedkeycolor']
+          style.textContent = style.textContent + `, ${selectedcolor} 50%`
+        } else {
+          style.textContent = style.textContent + `, magenta 50%`
+        }
         style.textContent = style.textContent + `);
   color: transparent;
   background-clip: text;
@@ -910,20 +963,20 @@ if (Object.hasOwn(value, 'keycolor')) {
 .selectableoption:hover {
     
 }`
-        
-        
-        
-        
-        
+
+
+
+
       }
-  if (!seenbase) {
-    style.textContent = style.textContent + `.selectablekey:link {
+      if (!seenbase) {
+        style.textContent = style.textContent + `.selectablekey:link {
   overflow: auto;
   color: #55eeee;
   font-family: Arial;
 }
 .selectedkey:link {
   font-weight: bold;
+  -webkit-text-stroke: 0.05em magenta;
   color: magenta;
 }
 .selectableoption {
@@ -934,64 +987,64 @@ if (Object.hasOwn(value, 'keycolor')) {
   background-clip: text;
 }
 `
-let dafaultcolors = '#55eeee'
-let selectedcolor = 'magenta'
-  }
+        dafaultcolors = '#55eeee'
+        selectedcolor = 'magenta'
+      }
     })
-          console.log(CLASSES);
-Object.entries(CLASSES)
-    .forEach(([key, value]) => {          
-style.textContent = style.textContent + `.customoption-${key} {`
-        if (Object.hasOwn(value, 'font-family')) {
-          style.textContent = style.textContent + `
+    //debug
+  //console.log(CLASSES);
+  Object.entries(CLASSES)
+    .forEach(([key, value]) => {
+      style.textContent = style.textContent + `.customoption-${key} {`
+      if (Object.hasOwn(value, 'font-family')) {
+        style.textContent = style.textContent + `
   font-family: ${value['font-family']};`
-        }
-style.textContent = style.textContent + `      
+      }
+      style.textContent = style.textContent + `      
   background: linear-gradient(to bottom`
-if (Object.hasOwn(value, 'keycolor')) {
+      if (Object.hasOwn(value, 'keycolor')) {
         style.textContent = style.textContent + `, ${value['keycolor']} 50%`
-} else {
-    style.textContent = style.textContent + `, ${dafaultcolors} 50%`
-}
- if (Object.hasOwn(value, 'selectedkeycolor')) {
+      } else {
+        style.textContent = style.textContent + `, ${dafaultcolors} 50%`
+      }
+      if (Object.hasOwn(value, 'selectedkeycolor')) {
         style.textContent = style.textContent + `, ${value['selectedkeycolor']} 50%`
-} else {
-    style.textContent = style.textContent + `, ${selectedcolor} 50%`
-}
-        style.textContent = style.textContent + `);
+      } else {
+        style.textContent = style.textContent + `, ${selectedcolor} 50%`
+      }
+      style.textContent = style.textContent + `);
   color: transparent;
   background-clip: text;
 }
 `;
 
-          
-          
-          
-          
-          
-style.textContent = style.textContent + `.customkey-${key}:link {`
-        if (Object.hasOwn(value, 'keycolor')) {
-          style.textContent = style.textContent + `
-  color: ${value['keycolor']};`
-        } else {
-          style.textContent = style.textContent + `
-  color: ${dafaultcolors};`
-        }
-        if (Object.hasOwn(value, 'font-family')) {
-          style.textContent = style.textContent + `
-  font-family: ${value['font-family']};`
-        }
+
+
+
+      style.textContent = style.textContent + `.customkey-${key}:link {`
+      if (Object.hasOwn(value, 'keycolor')) {
         style.textContent = style.textContent + `
+  color: ${value['keycolor']};`
+      } else {
+        style.textContent = style.textContent + `
+  color: ${dafaultcolors};`
+      }
+      if (Object.hasOwn(value, 'font-family')) {
+        style.textContent = style.textContent + `
+  font-family: ${value['font-family']};`
+      }
+      style.textContent = style.textContent + `
 }
 .customkeyselected-${key}:link {`
-        if (Object.hasOwn(value, 'selectedkeycolor')) {
-          style.textContent = style.textContent + `
-  color: ${value['selectedkeycolor']};`
-        } else {
-            style.textContent = style.textContent + `
-  color: ${selectedcolor};`
-        }
+      if (Object.hasOwn(value, 'selectedkeycolor')) {
         style.textContent = style.textContent + `
+  color: ${value['selectedkeycolor']};
+-webkit-text-stroke: 0.05em ${value['selectedkeycolor']};`
+      } else {
+        style.textContent = style.textContent + `
+  color: ${selectedcolor};`
+      }
+      style.textContent = style.textContent + `
 }
 `;
     });
@@ -1003,16 +1056,22 @@ style.textContent = style.textContent + `.customkey-${key}:link {`
   //console.log(style.textContent)
 }
 
-
-
-function myFunction(element) {
-  element = document.getElementById(`key${element}`);
+//in case you are wondering why there are console.log()'s in places that wouldn't really make sense, it is because for some reason <span style="width: 0.25em;"/> doesn't make its own separate thing(apperantly because it isn't a 'void' element??), and i have to put a <span></span> for it to work properly.
+//BUT I DIDN'T KNOW THAT! SO I WAS LOOKING FOR A PROBLEM IN THE PLACE WHERE IT WAS THROWING AN ERROR, AND WHERE IT GENERATES THE NEW PATH ARRAY, CAUSE I THOUGHT I WAS DUMB AND MADE A MISTAKE THERE THAT I FORGOT TO ACCOUNT FOR, BUT IT TURNS OUT, I WAS BEING DUMB IN A DIFFERENT PLACE!!
+let customspace = `<span style="width: 0.25em;"></span>`
+function myFunction(elementid) {
+  element = document.getElementById(`key${elementid}`);
   const parents = [];
-  while (element.parentElement.id != "listofkeys") {
-    parents.push(element.parentElement.dataset.keyname);
+  //console.log(element);
+  while (element.parentElement.id !== "listofkeys") {
     element = element.parentElement;
+    parents.push(element.dataset.keyname);
+    //console.log(element.parentElement.dataset.keyname);
   }
   path = parents.toReversed();
+  settreefrom(document.getElementById('whatdesctoshow'));
+  setkeypathurl();
+  updatdesignofdrpdwn(document.getElementById('whatdesctoshow'));
 }
 
 function render(inputpath, obj, currpath = [], currentlist = [], under = true) {
@@ -1025,55 +1084,62 @@ function render(inputpath, obj, currpath = [], currentlist = [], under = true) {
     .forEach(([key, value], index) => {
       counter++;
       let currentvalue = value
-      let gap = [currentlist]
-        .join("")
-        .replace(/true/g, "&thinsp;&thinsp;&ensp;")
-        .replace(/false/g, "│&thinsp;");
+      //debug
+      //console.log(currentlist);
+      let gap = currentlist.map(item => {
+        //console.log(item);
+        if (item) {
+            return ' ' + customspace
+        } else {
+            return '│' + customspace
+        }
+        })
+        .join('');
+        //console.log(gap);
       var testcurrpath = [...currpath, key];
       var testcurrpathbutasastring = testcurrpath.map(item => `"${item}"`)
         .join(' / ')
       let outerindex = index
       key.split(/\r?\n/)
-        .forEach((line, index) => {
+        .forEach((line, indexline) => {
           let isselectedkey = testcurrpath.length === inputpath.length && testcurrpath.every((val, outerindex) => val === inputpath[outerindex])
-          htmltoreturn = htmltoreturn + `<label style="color: lime;" data-keyname="${key}">${gap}`
+          htmltoreturn = htmltoreturn + `<label style="color: lime; font-family: monospace, monospace; line-height: 1;" data-keyname="${key}">${gap}`
+          //i just realized this if is probably redundant, and for ease of understanding, i will get rid of it, but ill probably add it back later when i am done as a fall back
           if (Object.keys(obj)
             .length != 0) {
             //if i am being honest, i genuinely forgot what these actually are, so these variable names will have to do.
-            let isstartoflist = treecharacteroptiontree[index === 0]
-            let isnewline = isstartoflist[outerindex === (Object.keys(obj)
-              .length - 1)]
-            htmltoreturn = htmltoreturn + isnewline
+            let iscurrentkey = treecharacteroptiontree[isselectedkey]
+            let isstartoflist = iscurrentkey[indexline === 0]
+            let isnewline = isstartoflist[outerindex === (Object.keys(obj).length - 1)]
+            htmltoreturn = htmltoreturn + `<span class="test">` + isnewline + `</span>`
           }
-          if (index === 0) {
+          if (indexline === 0) {
             htmltoreturn = htmltoreturn + `<span id="key${counter}">`
           }
-          
-          htmltoreturn = htmltoreturn + `<a href="javascript:void(0)" onclick="myFunction(${counter}); settreefrom(document.getElementById('whatdesctoshow')); setkeypathurl(); updatdesignofdrpdwn(document.getElementById('whatdesctoshow'));" class="selectablekey`
+          let classnamefromtree = descchoosertree[counter - 1]
+          htmltoreturn = htmltoreturn + `<a href="javascript:void(0)" onclick="myFunction(${counter});" class="selectablekey`
+          //i think the reason why i made the check 'classnamefromtree.startsWith('-') && classnamefromtree.length !== 0' was so that if it wasn't empty but it didn't start with - it wouldnt work.
+          //i am getting rid of the check to see if it empty, because it will do the same thing just to check if it starts with '-'
+          if (classnamefromtree.startsWith('-')) {
+            htmltoreturn = htmltoreturn + ` customkey${classnamefromtree}`
+          }
           if (isselectedkey) {
             counterofcurrent = counter
             htmltoreturn = htmltoreturn + ' selectedkey'
-          }
-          
-          
-          let classnamefromtree = descchoosertree[counter - 1]
-          console.log(classnamefromtree);
-          if (classnamefromtree.startsWith('-') && classnamefromtree.length !== 0) {
-            htmltoreturn = htmltoreturn + ` customkey${classnamefromtree}`
-
-            if (isselectedkey) {
-              htmltoreturn = htmltoreturn + ` customkeyselected${classnamefromtree}`
+            if (classnamefromtree.startsWith('-')) {
+            htmltoreturn = htmltoreturn + ` customkeyselected${classnamefromtree}`
             }
-        }
+          }
 
 
+          
 
-          htmltoreturn = htmltoreturn + `">
-                ${line}
-            </a>
+
+          //console.log("test" + line)
+          htmltoreturn = htmltoreturn + `">${line}</a>
             <br>
         </span>
-        ${(index === key.split(/\r?\n/).length - 1) ? render(inputpath, currentvalue["children"], testcurrpath, currentlist + [outerindex === Object.keys(obj).length - 1], false) : ""}
+        ${(indexline === key.split(/\r?\n/).length - 1) ? render(inputpath, currentvalue["children"], testcurrpath, [...currentlist, outerindex === Object.keys(obj).length - 1], false) : ""}
     </label>`
         });
 

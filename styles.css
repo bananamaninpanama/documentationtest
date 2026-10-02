@@ -194,3 +194,13 @@ dialog::backdrop {
     background-color: #333;
   appearance: base-select;
 }
+
+/* i think i gotta name this now...
+.test {
+  
+}
+*/
+/* ORRRRR i could just put the contents of this in the inner-span's style, because there are like 2 that are defined, total
+.test span {
+}
+*/
