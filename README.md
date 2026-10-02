@@ -16,7 +16,8 @@ to do:
   &emsp;-add a system to add new keys<br>
   &emsp;-add a system to copy and paste keys<br>
   &emsp;~~-add a thing in the error that tells you exactly where the error occured~~<br>
-  &emsp;&emsp;-add a thing where you can see what line/character(or column, idk what they are called) the first error occured on.<br>
+  &emsp;&emsp;~~-add a thing where you can see what line/character(or column, idk what they are called) the first error occured on.~~<br>
+  &emsp;&emsp;&emsp;-add a highlight to where the error occured in the text<br>
   &emsp;-add a thing to convert a normal tree-json into a json in this format<br>
   &emsp;-add more options to the 'beautify json' button, like 'make it only one column', 'how many spaces to increase for each new indent', etc<br>
   
