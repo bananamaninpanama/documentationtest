@@ -478,26 +478,37 @@ document.getElementById('replaccurrentthing')
 
 
 function editdecripion() {
+    let classthing = descchoosertree[counterofcurrent - 1]
   let temppath = path.flatMap((val, i) =>
       i < path.length - 1 ? [val, "children"] : [val],
     )
-    .concat("description")
+    .concat(classthing === "" ?
+    "description" :
+    ["descriptionvalues", classthing.slice(1)])
   let descorattribdesc = 0
-  const deepTarget = temppath.slice(0, (temppath.length - 1))
-    .reduce((currentDepth, key) => {
-      if (key === 'description') {
-        if (!(key in currentDepth)) {
+  let seendesc = false
+  console.log(temppath);
+  console.log(descchoosertree)
+  const deepTarget = temppath.slice(0, -1)
+    .reduce((currentDepth, key, idxthing) => {
+      if (key === 'description'  && idxthing % 2 === 1) {
+        if (!(key in currentDepth) || seendesc || true) {
           console.error('... this is probably your fault for editing dataobj or path while editing an the description');
         }
+        //wait... this shouldnt happen...
+        seendesc = true
         return currentDepth[key];
-      } else if (key === 'descriptionvalues') {
-        if (!(key in currentDepth)) {
+      } else if (key === 'descriptionvalues' && idxthing % 2 === 1) {
+        if (!(key in currentDepth) || seendesc) {
           console.error('... this is probably your fault for editing dataobj or path while editing an the description');
         }
-        return currentDepth['descriptionvalues'][Object.keys(currentDepth['descriptionvalues'])[0]];
+        seendesc = true
+        return currentDepth['descriptionvalues'];
+      } else {
+        return(currentDepth[key])
       }
     }, dataobj);
-  deepTarget[temppath[temppath.length - 1]] = document.getElementById('editdescriptionbox')
+  deepTarget[temppath.at(-1)] = document.getElementById('editdescriptionbox')
     .value;
   document.getElementById('descriptionbox')
     .textContent = document.getElementById('editdescriptionbox')
@@ -550,6 +561,7 @@ function editname() {
     document.getElementById('namebox')
       .textContent = newkeyname;
     path[path.length - 1] = newkeyname;
+    counter = 0
     listofkeys.innerHTML = render(path, dataobj);
   }
 }
@@ -600,6 +612,7 @@ function editchildren() {
     document.getElementById('namebox')
       .textContent = newkeyname;
     path[path.length - 1] = newkeyname;
+    counter = 0
     listofkeys.innerHTML = render(path, dataobj);
   }
 }
@@ -1117,6 +1130,9 @@ function render(inputpath, obj, currpath = [], currentlist = [], under = true) {
             htmltoreturn = htmltoreturn + `<span id="key${counter}">`
           }
           let classnamefromtree = descchoosertree[counter - 1]
+          
+          //console.log(counter);
+          //console.log(classnamefromtree);
           htmltoreturn = htmltoreturn + `<a href="javascript:void(0)" onclick="myFunction(${counter});" class="selectablekey`
           //i think the reason why i made the check 'classnamefromtree.startsWith('-') && classnamefromtree.length !== 0' was so that if it wasn't empty but it didn't start with - it wouldnt work.
           //i am getting rid of the check to see if it empty, because it will do the same thing just to check if it starts with '-'
