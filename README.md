@@ -13,6 +13,7 @@ later ill add an option to make a new one from scratch
 
 to do:
 <br>
+**FEATURES TO ADD:**<br>
   &emsp;-add a system to add new keys<br>
   &emsp;-add a system to copy and paste keys<br>
   &emsp;~~-add a thing in the error that tells you exactly where the error occured~~<br>
@@ -21,9 +22,11 @@ to do:
   &emsp;-add a thing to convert a normal tree-json into a json in this format<br>
   &emsp;-add more options to the 'beautify json' button, like 'make it only one column', 'how many spaces to increase for each new indent', etc<br>
   &emsp;-add a tutorial in the README.md, and a 'hint' button, on every section in the website<br>
+**BUGS TO FIX:**<br>
+  &emsp;-stop it from automatically adding a default desc if it doesn't exist when a key is loaded<br>
   
 those are the only things i remember right now...<br>
-i should probably go to sleep, its like 11 pm
+i should really focus on my school work
 
 also i just learned this interprets things with like html...<br>
 that wouldve been useful to know earlier
