@@ -485,17 +485,19 @@ function editdecripion() {
     .concat(classthing === "" ?
     "description" :
     ["descriptionvalues", classthing.slice(1)])
+    let enditem = temppath.pop()
   let descorattribdesc = 0
   let seendesc = false
-  console.log(temppath);
-  console.log(descchoosertree)
-  const deepTarget = temppath.slice(0, -1)
+  //console.log(temppath);
+  //console.log(descchoosertree)
+  const deepTarget = temppath
     .reduce((currentDepth, key, idxthing) => {
       if (key === 'description'  && idxthing % 2 === 1) {
         if (!(key in currentDepth) || seendesc || true) {
           console.error('... this is probably your fault for editing dataobj or path while editing an the description');
         }
         //wait... this shouldnt happen...
+        //if this were to happen then something went wrong, because it specifies to ignore the last item in the array
         seendesc = true
         return currentDepth[key];
       } else if (key === 'descriptionvalues' && idxthing % 2 === 1) {
@@ -508,7 +510,7 @@ function editdecripion() {
         return(currentDepth[key])
       }
     }, dataobj);
-  deepTarget[temppath.at(-1)] = document.getElementById('editdescriptionbox')
+  deepTarget[enditem] = document.getElementById('editdescriptionbox')
     .value;
   document.getElementById('descriptionbox')
     .textContent = document.getElementById('editdescriptionbox')
@@ -658,10 +660,10 @@ function getchildrenofcurrentkeyasbuttons() {
         .indexOf("\n", sliceidx1 = -1 ? value["description"].length : sliceidx1 + 1)
       let insertvalue = (value["description"].slice(0, sliceidx2 = -1 ? value["description"].length : sliceidx2))
         .slice(0, 60)
-      valuetoreturn = valuetoreturn + `
+      valuetoreturn += `
     <button class="childrenpath" onclick="path.push('${key}'); setkeypathurl();" style="flex: 1; margin: 4px; display: flex; flex-direction: column;"><label style="font-size: 20px;">${key}</label><label style="font-size: 8px; display: inline-block; color: #fffd6ee9">${insertvalue}${(insertvalue.length === value["description"].length ? '' : '...')}</label></button>`
     });
-  valuetoreturn = valuetoreturn + "</div>"
+  valuetoreturn += "</div>"
   return valuetoreturn
 }
 
@@ -706,24 +708,29 @@ function getparentofcurrentkeyasbuttons() {
 
 
 
-  valuetoreturn = valuetoreturn + "</div>"
+  valuetoreturn += "</div>"
   return valuetoreturn
 }
 
 function updatdesignofdrpdwn(element) {
   const selectElement = element.querySelector('selectedcontent')
-  const selectedClass = element.options[element.selectedIndex].className
-  selectElement.className = selectedClass;
+  const selectedClass = element.value
+  if (selectedClass === 'Default Description') {
+    selectElement.className = 'selectableoption';
+  } else if (selectedClass.startsWith('customselectedkey-')) {
+    selectElement.className = selectedClass.replace('customselectedkey-','customoption-')
+  }
 }
 
 document.getElementById('whatdesctoshow')
   .addEventListener('change', (event) => {
-    updatdesignofdrpdwn(event.target);
-    settreefrom(event.target);
-    setkeypathurl();
-    updatdesignofdrpdwn(event.target);
+    whattodowhendescdrpdwnupdates(event.target)
   });
-
+function whattodowhendescdrpdwnupdates(drpdwn) {
+    settreefrom(drpdwn);
+    setkeypathurl();
+    updatdesignofdrpdwn(drpdwn);
+}
 
 function updatewhatdesctoshow() {
   let setthewhatdesctoshowto = `
@@ -738,21 +745,34 @@ function updatewhatdesctoshow() {
     .reduce((currentLevel, key) => {
       //console.log(JSON.stringify(currentLevel) + ' ' + key)
       return currentLevel && currentLevel[key] !== undefined ? currentLevel[key] : undefined;
-    }, getdefaultdescobjtree(dataobj)[0]);
+    }, dataobj); // oh it was calling the function to make it have a description, and thats why it had a description
     //console.log(objectimportantthings);
     //the line right below this one was where it was saying an error occured, because it 'was undefined or null'(see line 1059)
+  
+  /*
+  Object.keys(objectimportantthings).forEach(key => {
+  if (key !== 'description' && key !== 'description') {
+    delete data[key]; // this is to delete all non-description keys. i commented this out because it is not really useful, and i will probably add other keys, and ill have to update this too, and i don't wwant to deal with the headache of figuring out what the problem is because i forgot i added this.
+  }
+});
+*/
+console.log(objectimportantthings);
   Object.entries(objectimportantthings)
     .forEach(([key, value]) => {
       if (key === 'description') {
-        setthewhatdesctoshowto = setthewhatdesctoshowto + `<option class="selectableoption" value="Default Description">Default Description</option>`;
+        console.log(key + 'HAS DEFAULT DESC')
+        //idk if this will work, but i mean, why shouldnt it
+        //actually let me check
+        //ok, apperantly i can, and that will be a lot easier to write down
+        setthewhatdesctoshowto += `<option class="selectableoption" value="Default Description">Default Description</option>`;
       } else if (key === 'descriptionvalues') {
         Object.keys(value)
           .forEach((classthing) => {
-            setthewhatdesctoshowto = setthewhatdesctoshowto + `<option class="customoption-${classthing}" value="customselectedkey-${classthing}">${classthing}</option>`;
+            setthewhatdesctoshowto += `<option class="customoption-${classthing}" value="customselectedkey-${classthing}">${classthing}</option>`;
           });
       }
     });
-
+console.log(setthewhatdesctoshowto);
   return setthewhatdesctoshowto;
 
 }
@@ -909,67 +929,69 @@ function addthecustomclasses() {
   Object.entries(CLASSES)
     .forEach(([key, value]) => {
       if (value['isbase'] && !seenbase) {
-        style.textContent = style.textContent + `.selectablekey:link {
+        //THIS IS A TEST TO SEE IF IT BREAKS OR NOT, CAUSE IT might
+        //FUTURE ME: REMEMBER LINE 920
+        style.textContent += `.selectablekey:link {
   overflow: auto;
   color: `
         if (Object.hasOwn(value, 'keycolor')) {
-          style.textContent = style.textContent + `${value['keycolor']};`
+          style.textContent += `${value['keycolor']};`
         } else {
-          style.textContent = style.textContent + `#55eeee;`
+          style.textContent += `#55eeee;`
         }
         if (Object.hasOwn(value, 'font-family')) {
-          style.textContent = style.textContent + `font-family: ${value['font-family']};`
+          style.textContent += `font-family: ${value['font-family']};`
         } else {
-          style.textContent = style.textContent + `font-family: Arial;`
+          style.textContent += `font-family: Arial;`
         }
-        style.textContent = style.textContent + `
+        style.textContent += `
 }
 `
-        style.textContent = style.textContent + `.selectedkey:link {
+        style.textContent += `.selectedkey:link {
   font-weight: bold;`
         if (Object.hasOwn(value, 'selectedkeycolor')) {
             let test =  value['selectedkeycolor']
             //debug
             //console.log("test" + test);
-          style.textContent = style.textContent + `
+          style.textContent += `
 color: ${test};
 -webkit-text-stroke: 0.05em ${test};`
         } else {
-          style.textContent = style.textContent + `
+          style.textContent += `
 color: magenta;
 -webkit-text-stroke: 0.05em magenta;`
         }
-        style.textContent = style.textContent + `
+        style.textContent += `
 }
 `
         seenbase = true
 
 
 
-        style.textContent = style.textContent + `.selectableoption {
+        style.textContent += `.selectableoption {
   overflow: auto;
   font-family: `
         if (Object.hasOwn(value, 'font-family')) {
-          style.textContent = style.textContent + `${value['font-family']};`
+          style.textContent += `${value['font-family']};`
         } else {
-          style.textContent = style.textContent + `Arial;`
+          style.textContent += `Arial;`
         }
 
-        style.textContent = style.textContent + `      
+        style.textContent += `      
   background: linear-gradient(to bottom`
         if (Object.hasOwn(value, 'keycolor')) {
           dafaultcolors = value['keycolor']
-          style.textContent = style.textContent + `, ${dafaultcolors} 50%`
+          style.textContent += `, ${dafaultcolors} 50%`
         } else {
-          style.textContent = style.textContent + `, #55eeee 50%`
+          style.textContent += `, #55eeee 50%`
         }
         if (Object.hasOwn(value, 'selectedkeycolor')) {
           selectedcolor = value['selectedkeycolor']
-          style.textContent = style.textContent + `, ${selectedcolor} 50%`
+          style.textContent += `, ${selectedcolor} 50%`
         } else {
-          style.textContent = style.textContent + `, magenta 50%`
+          style.textContent += `, magenta 50%`
         }
-        style.textContent = style.textContent + `);
+        style.textContent += `);
   color: transparent;
   background-clip: text;
 }
@@ -982,7 +1004,7 @@ color: magenta;
 
       }
       if (!seenbase) {
-        style.textContent = style.textContent + `.selectablekey:link {
+        style.textContent += `.selectablekey:link {
   overflow: auto;
   color: #55eeee;
   font-family: Arial;
@@ -1008,24 +1030,24 @@ color: magenta;
   //console.log(CLASSES);
   Object.entries(CLASSES)
     .forEach(([key, value]) => {
-      style.textContent = style.textContent + `.customoption-${key} {`
+      style.textContent += `.customoption-${key} {`
       if (Object.hasOwn(value, 'font-family')) {
-        style.textContent = style.textContent + `
+        style.textContent += `
   font-family: ${value['font-family']};`
       }
-      style.textContent = style.textContent + `      
+      style.textContent += `      
   background: linear-gradient(to bottom`
       if (Object.hasOwn(value, 'keycolor')) {
-        style.textContent = style.textContent + `, ${value['keycolor']} 50%`
+        style.textContent += `, ${value['keycolor']} 50%`
       } else {
-        style.textContent = style.textContent + `, ${dafaultcolors} 50%`
+        style.textContent += `, ${dafaultcolors} 50%`
       }
       if (Object.hasOwn(value, 'selectedkeycolor')) {
-        style.textContent = style.textContent + `, ${value['selectedkeycolor']} 50%`
+        style.textContent += `, ${value['selectedkeycolor']} 50%`
       } else {
-        style.textContent = style.textContent + `, ${selectedcolor} 50%`
+        style.textContent += `, ${selectedcolor} 50%`
       }
-      style.textContent = style.textContent + `);
+      style.textContent += `);
   color: transparent;
   background-clip: text;
 }
@@ -1034,30 +1056,30 @@ color: magenta;
 
 
 
-      style.textContent = style.textContent + `.customkey-${key}:link {`
+      style.textContent += `.customkey-${key}:link {`
       if (Object.hasOwn(value, 'keycolor')) {
-        style.textContent = style.textContent + `
+        style.textContent += `
   color: ${value['keycolor']};`
       } else {
-        style.textContent = style.textContent + `
+        style.textContent += `
   color: ${dafaultcolors};`
       }
       if (Object.hasOwn(value, 'font-family')) {
-        style.textContent = style.textContent + `
+        style.textContent += `
   font-family: ${value['font-family']};`
       }
-      style.textContent = style.textContent + `
+      style.textContent += `
 }
 .customkeyselected-${key}:link {`
       if (Object.hasOwn(value, 'selectedkeycolor')) {
-        style.textContent = style.textContent + `
+        style.textContent += `
   color: ${value['selectedkeycolor']};
 -webkit-text-stroke: 0.05em ${value['selectedkeycolor']};`
       } else {
-        style.textContent = style.textContent + `
+        style.textContent += `
   color: ${selectedcolor};`
       }
-      style.textContent = style.textContent + `
+      style.textContent += `
 }
 `;
     });
@@ -1082,16 +1104,15 @@ function myFunction(elementid) {
     //console.log(element.parentElement.dataset.keyname);
   }
   path = parents.toReversed();
-  settreefrom(document.getElementById('whatdesctoshow'));
-  setkeypathurl();
-  updatdesignofdrpdwn(document.getElementById('whatdesctoshow'));
+  whattodowhendescdrpdwnupdates(document.getElementById('whatdesctoshow'));
 }
 
 function render(inputpath, obj, currpath = [], currentlist = [], under = true) {
+  let htmltoreturn
   if (under) {
-    var htmltoreturn = `<label style="color: lime; font-size: 12px">Root</label><br>`;
+    htmltoreturn = `<label style="color: lime; font-size: 12px">Root</label><br>`;
   } else {
-    var htmltoreturn = "";
+    htmltoreturn = "";
   }
   Object.entries(obj)
     .forEach(([key, value], index) => {
@@ -1116,7 +1137,7 @@ function render(inputpath, obj, currpath = [], currentlist = [], under = true) {
       key.split(/\r?\n/)
         .forEach((line, indexline) => {
           let isselectedkey = testcurrpath.length === inputpath.length && testcurrpath.every((val, outerindex) => val === inputpath[outerindex])
-          htmltoreturn = htmltoreturn + `<label style="color: lime; font-family: monospace, monospace; line-height: 1;" data-keyname="${key}">${gap}`
+          htmltoreturn += `<label style="color: lime; font-family: monospace, monospace; line-height: 1;" data-keyname="${key}">${gap}`
           //i just realized this if is probably redundant, and for ease of understanding, i will get rid of it, but ill probably add it back later when i am done as a fall back
           if (Object.keys(obj)
             .length != 0) {
@@ -1124,26 +1145,26 @@ function render(inputpath, obj, currpath = [], currentlist = [], under = true) {
             let iscurrentkey = treecharacteroptiontree[isselectedkey]
             let isstartoflist = iscurrentkey[indexline === 0]
             let isnewline = isstartoflist[outerindex === (Object.keys(obj).length - 1)]
-            htmltoreturn = htmltoreturn + `<span class="test">` + isnewline + `</span>`
+            htmltoreturn += `<span class="test">${isnewline}</span>`
           }
           if (indexline === 0) {
-            htmltoreturn = htmltoreturn + `<span id="key${counter}">`
+            htmltoreturn += `<span id="key${counter}">`
           }
           let classnamefromtree = descchoosertree[counter - 1]
           
           //console.log(counter);
           //console.log(classnamefromtree);
-          htmltoreturn = htmltoreturn + `<a href="javascript:void(0)" onclick="myFunction(${counter});" class="selectablekey`
+          htmltoreturn += `<a href="javascript:void(0)" onclick="myFunction(${counter});" class="selectablekey`
           //i think the reason why i made the check 'classnamefromtree.startsWith('-') && classnamefromtree.length !== 0' was so that if it wasn't empty but it didn't start with - it wouldnt work.
           //i am getting rid of the check to see if it empty, because it will do the same thing just to check if it starts with '-'
           if (classnamefromtree.startsWith('-')) {
-            htmltoreturn = htmltoreturn + ` customkey${classnamefromtree}`
+            htmltoreturn += ` customkey${classnamefromtree}`
           }
           if (isselectedkey) {
             counterofcurrent = counter
-            htmltoreturn = htmltoreturn + ' selectedkey'
+            htmltoreturn += ' selectedkey'
             if (classnamefromtree.startsWith('-')) {
-            htmltoreturn = htmltoreturn + ` customkeyselected${classnamefromtree}`
+            htmltoreturn += ` customkeyselected${classnamefromtree}`
             }
           }
 
@@ -1152,7 +1173,7 @@ function render(inputpath, obj, currpath = [], currentlist = [], under = true) {
 
 
           //console.log("test" + line)
-          htmltoreturn = htmltoreturn + `">${line}</a>
+          htmltoreturn += `">${line}</a>
             <br>
         </span>
         ${(indexline === key.split(/\r?\n/).length - 1) ? render(inputpath, currentvalue["children"], testcurrpath, [...currentlist, outerindex === Object.keys(obj).length - 1], false) : ""}
