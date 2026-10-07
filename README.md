@@ -22,6 +22,7 @@ to do:
   &emsp;-add a thing to convert a normal tree-json into a json in this format<br>
   &emsp;-add more options to the 'beautify json' button, like 'make it only one column', 'how many spaces to increase for each new indent', etc<br>
   &emsp;-add a tutorial in the README.md, and a 'hint' button, on every section in the website<br>
+  &emsp;-add more customizable display options(like 'space of keys from tree' and 'color of website' and stuff)<br>
 **KNOWN BUGS TO FIX:**<br>
   &emsp;~~-stop it from automatically adding a default desc if it doesn't exist when a key is loaded~~<br>
   
