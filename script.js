@@ -471,6 +471,26 @@ window.addEventListener('drop', function(e) {
 
 
 
+
+document.getElementById('keylisttoolbar').addEventListener("transitionend", (event) => {
+    if (event.propertyName === 'grid-template-rows' && event.target.classList.contains("shrink")) {
+        event.target.classList.add('hidden')
+    }
+});
+
+
+function toggleToolbar() {
+    const keytoolbarholder = document.getElementById('keylisttoolbar')
+    keytoolbarholder.classList.remove('hidden')
+    keytoolbarholder.offsetWidth
+    document.getElementById('toggle-btn').classList.toggle('shrink')
+       keytoolbarholder.classList.toggle('shrink')
+}
+
+
+
+
+
 document.getElementById('replaccurrentthing')
   .addEventListener('change', function(event) {
     detectifdropdownshouldbevisible(event.target)
@@ -756,11 +776,11 @@ function updatewhatdesctoshow() {
   }
 });
 */
-console.log(objectimportantthings);
+//console.log(objectimportantthings);
   Object.entries(objectimportantthings)
     .forEach(([key, value]) => {
       if (key === 'description') {
-        console.log(key + 'HAS DEFAULT DESC')
+        //console.log(key + 'HAS DEFAULT DESC')
         //idk if this will work, but i mean, why shouldnt it
         //actually let me check
         //ok, apperantly i can, and that will be a lot easier to write down
@@ -772,7 +792,7 @@ console.log(objectimportantthings);
           });
       }
     });
-console.log(setthewhatdesctoshowto);
+//console.log(setthewhatdesctoshowto);
   return setthewhatdesctoshowto;
 
 }

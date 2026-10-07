@@ -204,3 +204,57 @@ dialog::backdrop {
 .test span {
 }
 */
+#toggle-btn {
+  width: 15px;
+  height: 15px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+  transform: rotate(180deg);
+  transition: transform 0.5s ease;
+}
+#toggle-btn:hover {
+  transform: rotate(170deg);
+}
+/*
+there is no way i got the correct way to make it only do
+something with a class list first try without searching it up
+      |
+      V
+*/
+#toggle-btn.shrink:hover {
+  transform: rotate(10deg);
+}
+#toggle-btn.shrink {
+  transform: rotate(0deg);
+}
+
+#keylisttoolbar {
+  display: grid;
+  overflow: hidden;
+  text-align: center;
+  grid-template-rows: 1fr; 
+  transition: grid-template-rows 0.5s ease-out, padding 0.5s ease, banana;
+  padding-left: 0px;
+  padding-right: 0px;
+  grid-auto-rows: minmax(0px, auto);
+}
+
+
+
+#keylisttoolbar.shrink {
+  grid-template-rows: 0fr;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+#keylisttoolbar.hidden {
+  display: none;
+}
+
+
+#keylisttoolbaritems {
+  min-height: 0px;
+}
